@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LUCOP Pharmacy Playground</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* LUCOP PHARMACY PLAYGROUND
+   Concept: the student sits at a simulated workstation. A dark desk bezel
+   frames two practice systems, each with its own visual era so switching
+   software FEELS different — that's the transferable lesson.
+   Signature move: the gold Preceptor panel rides along the right edge. */
+:root{--desk:#0b0e13;--bez:#1e2531;--ink:#c7d3e2;--dim:#7b8ca3;
+--lu:#8a1538;--lu2:#b8365c;--gold:#c8a04a;
+--ok:#1f7a4d;--okb:#e6f4ec;--wn:#b87503;--wnb:#fdf3df;--bd:#b3122e;--bdb:#fcebee;--inf:#1a4e8f;--infb:#e8f0fb;--r:4px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Inter,-apple-system,Segoe UI,sans-serif;font-size:14px;line-height:1.45;color:#e8eef5;
+background:radial-gradient(ellipse at 50% 0%,#1a2130,#07090d 70%);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select,textarea{font:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+.hide{display:none!important}
+.sim{background:repeating-linear-gradient(135deg,#f6d365 0 14px,#f0bf43 14px 28px);color:#3d2a00;
+font-size:10.5px;font-weight:800;letter-spacing:.14em;text-align:center;padding:5px;text-transform:uppercase;flex:none}
+/* taskbar */
+.tb{background:linear-gradient(180deg,#161d28,#0f141c);border-bottom:1px solid #2a3443;display:flex;
+align-items:center;gap:13px;padding:0 14px;height:46px;flex:none}
+.mk{width:28px;height:28px;border-radius:5px;background:linear-gradient(135deg,var(--lu),var(--lu2));
+display:grid;place-items:center;font-weight:800;font-size:11px;color:#fff}
+.tb b{font-size:14px}.tb small{display:block;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);font-weight:600}
+.sys{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink);background:#1d2635;
+border:1px solid #2e3a4c;border-radius:20px;padding:4px 12px}
+.lamp{width:7px;height:7px;border-radius:50%;background:#45d483;box-shadow:0 0 7px #45d483}
+.rgt{margin-left:auto;display:flex;align-items:center;gap:9px}
+.tbtn{font-size:11.5px;padding:6px 11px;border-radius:var(--r);border:1px solid #2e3a4c;color:var(--ink);background:#1a2230;transition:.15s}
+.tbtn:hover{background:#243043;color:#fff}
+.tbtn.dz:hover{background:#3a1520;border-color:#7a2238;color:#ffc9d4}
+.clk{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--dim);padding-left:9px;border-left:1px solid #2a3443}
+.av{width:26px;height:26px;border-radius:50%;background:var(--gold);color:#2a2000;display:grid;place-items:center;font-weight:800;font-size:10px}
+.stage{flex:1;display:flex;overflow:hidden;min-height:0}
+.scr{flex:1;overflow:auto}
+/* login */
+.lg{min-height:100%;display:grid;place-items:center;padding:40px 20px}
+.lgc{width:100%;max-width:460px;background:linear-gradient(180deg,#19202c,#121822);border:1px solid #2a3443;
+border-radius:10px;padding:34px;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.lgm{width:54px;height:54px;border-radius:11px;background:linear-gradient(135deg,var(--lu),var(--lu2));
+display:grid;place-items:center;font-weight:800;font-size:17px;color:#fff;margin-bottom:18px}
+.lgc h1{font-size:25px;font-weight:800;letter-spacing:-.025em;line-height:1.15}
+.lgc h1 span{color:var(--gold)}
+.tag{color:var(--dim);font-size:13px;margin-top:7px;line-height:1.6}
+.fld{margin-top:16px}
+.fld label{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);font-weight:700;margin-bottom:6px}
+.fld input{width:100%;background:#0c1017;border:1px solid #2e3a4c;color:#fff;padding:11px 13px;border-radius:var(--r);font-size:14px}
+.fld input:focus{border-color:var(--gold);outline:none}
+.bp{width:100%;margin-top:21px;background:linear-gradient(180deg,var(--lu2),var(--lu));color:#fff;
+font-weight:700;padding:13px;border-radius:var(--r);font-size:14.5px;border:1px solid #9d2044}
+.bp:hover{filter:brightness(1.12)}
+.fine{margin-top:17px;font-size:11px;color:#5e6e84;line-height:1.65;border-top:1px solid #232c3a;padding-top:13px}
+/* lobby */
+.lob{max-width:1060px;margin:0 auto;padding:36px 24px 60px}
+.eyb{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.lob h1{font-size:33px;font-weight:800;letter-spacing:-.03em;margin-top:9px;line-height:1.1}
+.lob>p{color:#8fa0b8;font-size:14.5px;margin-top:11px;max-width:66ch;line-height:1.65}
+.stats{display:flex;gap:26px;flex-wrap:wrap;margin-top:20px;padding:16px 0;border-top:1px solid #222b38;border-bottom:1px solid #222b38}
+.st b{display:block;font-family:'IBM Plex Mono',monospace;font-size:24px;color:#fff}
+.st span{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#6d7e95;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:18px;margin-top:24px}
+.card{background:linear-gradient(180deg,#19202c,#131924);border:1px solid #28313f;border-radius:9px;overflow:hidden;transition:.18s;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-3px);border-color:#3d4a5e;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.spine{height:5px}
+.cin{padding:19px;display:flex;flex-direction:column;flex:1}
+.cde{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;color:#6d7e95;font-weight:600}
+.cin h3{font-size:19px;font-weight:700;letter-spacing:-.02em;margin-top:5px}
+.csub{font-size:12px;color:#8fa0b8;margin-top:2px}
+.cds{font-size:12.5px;color:#9aabc2;line-height:1.65;margin-top:12px;flex:1}
+.sk{margin-top:13px;padding-top:13px;border-top:1px solid #242d3b}
+.sk h4{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#6d7e95;font-weight:700;margin-bottom:7px}
+.sk li{font-size:12px;color:#9aabc2;list-style:none;padding-left:14px;position:relative;line-height:1.7}
+.sk li::before{content:"›";position:absolute;left:2px;color:var(--gold);font-weight:700}
+.pills{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}
+.pl{font-size:10px;font-weight:700;padding:3px 9px;border-radius:11px;background:#232d3c;color:#9fb3cc;border:1px solid #2f3b4d}
+.pl.d{background:#14301f;color:#5cd68f;border-color:#1f5435}
+.lnc{margin-top:16px;width:100%;padding:11px;border-radius:var(--r);font-weight:700;font-size:13.5px;background:#f1f5fa;color:#101722;transition:.15s}
+.lnc:hover{background:#fff}
+.note{font-size:11px;color:#7f90a7;line-height:1.6;margin-top:10px}
+/* window */
+.win{display:flex;flex-direction:column;height:100%;min-height:0}
+.wbar{display:flex;align-items:center;gap:10px;padding:7px 12px;flex:none;background:linear-gradient(180deg,#232c3a,#1a222e);border-bottom:1px solid #0d1219}
+.dots{display:flex;gap:6px}.dots i{width:11px;height:11px;border-radius:50%;display:block}
+.wtt{font-size:11.5px;color:#9fb0c6;font-weight:600}
+.wbody{flex:1;display:flex;min-height:0}
+.app{flex:1;overflow:auto;min-width:0}
+/* preceptor */
+.pc{width:328px;flex:none;background:linear-gradient(180deg,#141b26,#0f141d);border-left:1px solid #28313f;display:flex;flex-direction:column;overflow:auto}
+.pc.col{width:42px}
+.pch{padding:12px 13px;border-bottom:1px solid #242d3b;display:flex;align-items:center;gap:9px}
+.pch h2{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:800;flex:1}
+.pcb{padding:13px}
+.sb{text-align:left;padding:11px 12px;border:1px solid #2b3545;border-radius:var(--r);background:#18202c;transition:.15s;width:100%;margin-bottom:8px}
+.sb:hover{border-color:var(--gold);background:#1e2736}
+.sb strong{display:block;font-size:13px;color:#e8eef5}
+.sb span{font-size:11px;color:#7f90a7}
+.sb .bar{height:3px;background:#242d3b;border-radius:3px;margin-top:8px;overflow:hidden;display:block}
+.sb .bar i{display:block;height:100%;background:var(--ok)}
+.drow{display:flex;gap:5px;margin:12px 0}
+.drow i{flex:1;height:4px;border-radius:3px;background:#2a3443;display:block}
+.drow i.p{background:var(--ok)}.drow i.f{background:var(--bd)}.drow i.n{background:var(--gold)}
+.tc{background:#1a2230;border:1px solid #2b3545;border-radius:6px;padding:14px}
+.tn{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#7f90a7;font-weight:700}
+.kd{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.1em;padding:2px 7px;border-radius:9px;margin-left:7px}
+.k1{background:#15314f;color:#7cb8f5}.k2{background:#3a2a10;color:#f0c068}.k3{background:#1c3b2c;color:#6ed79f}
+.tq{font-size:13.5px;line-height:1.6;margin-top:10px;color:#eaf1f8}
+.tc input[type=text]{width:100%;margin-top:12px;background:#0c1017;border:1px solid #2e3a4c;color:#fff;
+padding:10px 12px;border-radius:var(--r);font-family:'IBM Plex Mono',monospace;font-size:13px}
+.chs{display:grid;gap:7px;margin-top:12px}
+.ch{text-align:left;padding:10px 12px;border:1px solid #2e3a4c;border-radius:var(--r);background:#0f1520;
+font-size:12.5px;line-height:1.5;color:#cfdbe9;transition:.13s}
+.ch:hover{border-color:var(--gold);background:#17202d}
+.ch.s{border-color:var(--gold);background:#241e10;color:#fff}
+.acts{display:flex;gap:8px;margin-top:12px}
+.acts button{flex:1;padding:10px;border-radius:var(--r);font-weight:700;font-size:12.5px}
+.bchk{background:var(--gold);color:#241c00}.bchk:hover{filter:brightness(1.1)}
+.bhnt{background:#222b3a;color:#9fb0c6;border:1px solid #2e3a4c;flex:0 0 72px!important}
+.fb{margin-top:12px;border-radius:6px;padding:12px;font-size:12.5px;line-height:1.65}
+.fb.g{background:#0f2b1d;border:1px solid #1f5435;color:#9fe9c0}
+.fb.b{background:#2e1118;border:1px solid #5e1f2e;color:#f3b1bf}
+.fb.h{background:#2b2410;border:1px solid #5a4a16;color:#f0d79a}
+.fb strong{display:block;margin-bottom:5px;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.why{display:block;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.12);color:#d8e6f2;font-style:italic}
+.pf{margin-top:13px;padding-top:12px;border-top:1px solid #242d3b;display:flex;gap:8px}
+.pf button{flex:1;font-size:11px;padding:8px;border-radius:var(--r);background:#1b2431;border:1px solid #2b3545;color:#8fa0b8}
+.pf button:hover{background:#243044;color:#cfdbe9}
+/* ===== SYSTEM 1: RxONE (dated teal terminal) ===== */
+.rx{background:#c8ccc4;color:#101210;min-height:100%;display:flex;flex-direction:column}
+.rxm{background:#008080;color:#fff;display:flex;align-items:center;font-size:12px;border-bottom:2px solid #004f4f}
+.rxm .mi{padding:7px 14px;border-right:1px solid #0a9c9c;font-weight:600}
+.rxm .mi:hover{background:#0a9c9c}
+.rxm .lg2{background:#004f4f;padding:7px 15px;font-weight:800;letter-spacing:.1em}
+.rxm .who{margin-left:auto;padding:7px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;background:#004f4f}
+.rxmain{flex:1;padding:13px;overflow:auto}
+.pnl{background:#d8dcd4;border:2px solid #fff;border-right-color:#808478;border-bottom-color:#808478;margin-bottom:12px}
+.pnl>h3{background:linear-gradient(180deg,#006a6a,#004f4f);color:#fff;font-size:11px;font-weight:700;
+letter-spacing:.14em;text-transform:uppercase;padding:6px 11px}
+.pb{padding:12px}
+table.t{width:100%;border-collapse:collapse;background:#fff;font-size:12.5px}
+table.t th{background:#b4bab0;text-align:left;padding:6px 9px;font-size:10px;letter-spacing:.1em;
+text-transform:uppercase;border:1px solid #969c92;font-weight:700;color:#1b2420}
+table.t td{padding:6px 9px;border:1px solid #d2d6cf;vertical-align:top}
+table.t tbody tr[data-rx],table.t tbody tr[data-pt]{cursor:pointer}
+table.t tbody tr[data-rx]:hover,table.t tbody tr[data-pt]:hover{background:#cfe6e6}
+.s{display:inline-block;font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:3px;white-space:nowrap}
+.sw{background:#fff2cc;color:#8a6300;border:1px solid #e0c060}
+.sr{background:#ffd9df;color:#8c0b23;border:1px solid #e08b9b}
+.sh{background:#e2d9f7;color:#4b2f93;border:1px solid #b5a3e8}
+.sd{background:#d4f0de;color:#13613b;border:1px solid #87c9a4}
+.fx{display:grid;grid-template-columns:1.3fr .9fr;gap:12px}
+@media(max-width:1000px){.fx{grid-template-columns:1fr}}
+.fg{display:grid;grid-template-columns:114px 1fr;gap:7px 10px;align-items:center}
+.fg label{font-size:11px;font-weight:700;color:#2c3630;text-align:right}
+.fg .ro,.fg input{background:#fff;border:1px solid #fff;border-top-color:#808478;border-left-color:#808478;
+padding:5px 8px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#101210;width:100%}
+.fg .ro{background:#eceee9;color:#3a443e}
+.fg input:focus{outline:2px solid #008080;outline-offset:-1px}
+.sig{grid-column:1/-1;background:#fffbe8;border:1px solid #d8cf9a;padding:9px 11px;font-size:12.5px;margin-top:3px}
+.sig b{display:block;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#7a6a20;margin-bottom:3px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:11px;border-top:1px solid #b4bab0}
+.b{background:linear-gradient(180deg,#e8ebe5,#c8ccc4);border:2px solid #fff;border-right-color:#6e736a;
+border-bottom-color:#6e736a;padding:7px 15px;font-size:12px;font-weight:700;color:#1b2420}
+.b:hover{background:linear-gradient(180deg,#f4f6f2,#d8dcd4)}
+.b.go{background:linear-gradient(180deg,#2fa36b,#1b7a4c);color:#fff;border-color:#64d3a0;border-right-color:#0e5533;border-bottom-color:#0e5533}
+.b.no{background:linear-gradient(180deg,#d1465f,#a61632);color:#fff;border-color:#f09aab;border-right-color:#6e0c20;border-bottom-color:#6e0c20}
+.ab{border:2px solid;padding:10px 12px;margin-top:10px;font-size:12.5px;line-height:1.6}
+.ab.d{background:#fff4e3;border-color:#c07a16;color:#5e3a00}
+.ab.r{background:#ffe9ed;border-color:#a61632;color:#6e0c20}
+.ab.p{background:#e4f6ec;border-color:#1b7a4c;color:#0d4a2d}
+.ab h4{font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:5px;font-weight:800}
+.fk{background:#004f4f;color:#9fe8e8;font-family:'IBM Plex Mono',monospace;font-size:10.5px;
+padding:5px 12px;display:flex;gap:16px;flex-wrap:wrap;flex:none}
+.fk b{color:#fff}
+.pcard{background:#fff;border:1px solid #969c92;padding:12px;font-size:12.5px}
+.pcard h4{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:#004f4f;font-weight:800;
+margin-bottom:7px;border-bottom:1px solid #d2d6cf;padding-bottom:4px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:12px}
+.kv dt{color:#5a645e}.kv dd{font-family:'IBM Plex Mono',monospace;text-align:right}
+.alrg{background:#ffd9df;border:2px solid #a61632;color:#6e0c20;padding:7px 11px;font-size:12px;font-weight:700;margin-bottom:10px}
+/* ===== SYSTEM 2: MERIDIAN (clinical chart) ===== */
+.me{background:#eef2f6;color:#0c1a26;min-height:100%;display:flex;flex-direction:column}
+.met{background:linear-gradient(180deg,#123250,#0b2135);color:#dce8f2;display:flex;align-items:center;gap:13px;padding:0 14px;height:44px;flex:none}
+.met b{font-size:15px;color:#fff}.met b span{color:#3fc0bd}
+.mpt{display:flex;gap:1px;background:#081a2a;padding:0 10px;flex:none;overflow-x:auto}
+.mpt button{padding:7px 14px;font-size:12px;color:#9fb8cc;border-bottom:3px solid transparent;white-space:nowrap}
+.mpt button:hover{background:rgba(255,255,255,.07);color:#fff}
+.mpt button.on{background:#eef2f6;color:#0c1a26;font-weight:700;border-bottom-color:#0f8b8d}
+.mw{flex:1;display:flex;min-height:0}
+.sto{width:232px;flex:none;background:linear-gradient(175deg,#123250,#0b2135);color:#cfe0ed;overflow-y:auto;padding-bottom:20px}
+.sth{padding:14px;display:flex;gap:11px}
+.pho{width:46px;height:46px;border-radius:4px;display:grid;place-items:center;font-weight:800;font-size:16px;color:#06212f}
+.sth h1{font-size:14px;color:#fff;line-height:1.25;font-weight:700}
+.sth .m{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8fadc4;margin-top:3px}
+.sec{border-top:1px solid rgba(255,255,255,.08);padding:10px 14px}
+.sec h2{font-size:9px;letter-spacing:.17em;text-transform:uppercase;color:#6f90a9;margin-bottom:6px;font-weight:700}
+.row{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;padding:2px 0}
+.row span:first-child{color:#8fadc4}.row span:last-child{color:#eaf3fa;text-align:right;font-weight:500}
+.alb{background:#fdf3df;border-left:4px solid #b87503;color:#3d2a00;margin:9px 11px;padding:8px 10px;border-radius:3px}
+.alb h3{font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:#b87503;font-weight:800}
+.alb li{list-style:none;font-size:11.5px;font-weight:700;margin-top:4px;line-height:1.4}
+.alb li em{font-weight:400;font-style:normal;color:#6a5120;display:block;font-size:10.5px}
+.wk{flex:1;overflow-y:auto;min-width:0}
+.at{display:flex;gap:2px;background:#fff;border-bottom:1px solid #d5dee6;padding:0 12px;position:sticky;top:0;z-index:4;overflow-x:auto}
+.at button{padding:10px 13px 8px;font-size:12px;color:#44596b;border-bottom:3px solid transparent;white-space:nowrap}
+.at button:hover{color:#0a6b6d}
+.at button.on{color:#0a6b6d;border-bottom-color:#0f8b8d;font-weight:700}
+.pane{padding:14px}
+.mc{background:#fff;border:1px solid #d5dee6;border-radius:3px;box-shadow:0 1px 2px rgba(10,28,44,.08);margin-bottom:13px;overflow:hidden}
+.mc>header{display:flex;align-items:center;gap:9px;padding:8px 12px;border-bottom:1px solid #e8eef3;background:linear-gradient(180deg,#fbfdfe,#f3f7fa)}
+.mc>header h3{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#15395a;font-weight:800}
+.rt{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#78909c}
+.mb{padding:12px}.mb.fl{padding:0}
+table.m{width:100%;border-collapse:collapse}
+table.m th{text-align:left;font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:#78909c;
+font-weight:700;padding:7px 11px;border-bottom:1px solid #d5dee6;background:#f7fafc}
+table.m td{padding:7px 11px;border-bottom:1px solid #eef3f7;font-size:12.5px;vertical-align:top}
+table.m tbody tr:hover{background:#f6fbfb}
+.n{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;text-align:right}
+.cp{display:inline-block;padding:1.5px 7px;border-radius:10px;font-size:10px;font-weight:800;white-space:nowrap}
+.ch1{background:var(--wnb);color:var(--wn);border:1px solid #e9c268}
+.cl1{background:var(--infb);color:var(--inf);border:1px solid #b9d2ef}
+.co1{background:var(--okb);color:var(--ok);border:1px solid #b6ddc7}
+.cn1{background:#eef2f6;color:#44596b;border:1px solid #d5dee6}
+.ct1{background:#e4f3f3;color:#0a6b6d;border:1px solid #a9dcdc}
+.med{border-bottom:1px solid #eef3f7;padding:10px 12px}
+.med:last-child{border-bottom:0}
+.med .mn{font-weight:700;font-size:13px}
+.med .mg{font-size:12px;color:#44596b;margin-top:1px}
+.med .mi2{font-size:11px;color:#78909c;font-style:italic;margin-top:2px}
+.ds{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.d1{border:1px solid #d5dee6;border-radius:3px;padding:5px 9px;min-width:82px;background:#fcfdfe;font-size:11px}
+.d1 .t{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:12px;display:block}
+.d1.gv{background:var(--okb);border-color:#b6ddc7;color:var(--ok)}
+.d1.du{background:#e4f3f3;border-color:#8fcfcf;color:#0a6b6d;cursor:pointer}
+.d1.du:hover{background:#cfeaea}
+.d1.hd{background:#f3eefc;border-color:#d8cbf3;color:#5b3fa8}
+.ob{background:#f7fafc;border:1px dashed #b9c9d6;border-radius:4px;padding:12px}
+.ob label{display:block;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#78909c;font-weight:700;margin-bottom:5px}
+.ob input,.ob select{width:100%;padding:8px 10px;border:1px solid #c3d0da;border-radius:3px;
+font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:#fff;color:#0c1a26}
+.o2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+@media(max-width:760px){.o2{grid-template-columns:1fr}}
+.bt{background:#0f8b8d;color:#fff;font-weight:700;padding:9px 16px;border-radius:3px;font-size:12.5px}
+.bt:hover{background:#0a6b6d}
+.bg2{background:#eef2f6;color:#44596b;border:1px solid #d5dee6;font-weight:600;padding:9px 16px;border-radius:3px;font-size:12.5px}
+.nt{border-bottom:1px solid #eef3f7}
+.nth{display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:10px 12px}
+.nth:hover{background:#f6fbfb}
+.nth strong{font-size:12.5px;display:block}.nth span{font-size:11px;color:#78909c}
+.ntb{display:none;padding:0 14px 14px 30px;font-size:12.5px;line-height:1.72;white-space:pre-wrap;
+border-left:2px solid #e4f3f3;margin-left:18px;color:#1d2f3d}
+.nt.op .ntb{display:block}
+/* certificate */
+.cw{min-height:100%;display:grid;place-items:center;padding:34px 20px}
+.ct{width:100%;max-width:720px;background:linear-gradient(170deg,#fffdf7,#fdf7e8);color:#1d1708;
+border:2px solid var(--gold);border-radius:8px;padding:44px;box-shadow:0 30px 80px rgba(0,0,0,.6);position:relative}
+.ct::before{content:"";position:absolute;inset:11px;border:1px solid rgba(200,160,74,.42);border-radius:4px;pointer-events:none}
+.ctm{width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,var(--lu),var(--lu2));
+display:grid;place-items:center;font-weight:800;color:#fff;font-size:16px;margin:0 auto}
+.ct .ey{text-align:center;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:#8a7430;font-weight:800;margin-top:16px}
+.ct h1{text-align:center;font-size:30px;font-weight:800;letter-spacing:-.025em;margin-top:9px;color:#2a1f06}
+.nmx{text-align:center;font-size:34px;font-weight:800;color:var(--lu);margin:20px 0 6px;letter-spacing:-.03em;
+border-bottom:2px solid rgba(138,21,56,.22);padding-bottom:13px}
+.ct .sb2{text-align:center;font-size:13.5px;color:#5a4a1c;line-height:1.7;max-width:56ch;margin:14px auto 0}
+.cs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px;padding:18px 0;
+border-top:1px solid rgba(200,160,74,.4);border-bottom:1px solid rgba(200,160,74,.4)}
+.cs div{text-align:center}
+.cs b{display:block;font-family:'IBM Plex Mono',monospace;font-size:26px;color:#2a1f06}
+.cs span{font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:#8a7430;font-weight:700}
+.brk{margin-top:17px}
+.brk h4{font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:#8a7430;font-weight:800;margin-bottom:9px}
+.br{display:flex;align-items:center;gap:10px;font-size:12.5px;padding:4px 0}
+.br .l{width:230px;flex:none;color:#3f3310;font-weight:600}
+.br .tr{flex:1;height:7px;background:rgba(200,160,74,.25);border-radius:4px;overflow:hidden}
+.br .tr i{display:block;height:100%;background:var(--lu)}
+.br .sc{width:52px;text-align:right;font-family:'IBM Plex Mono',monospace;font-weight:600}
+.cf{display:flex;justify-content:space-between;gap:18px;margin-top:24px;font-size:11px;color:#6b591f;flex-wrap:wrap}
+.cf .cd{font-family:'IBM Plex Mono',monospace;font-size:13px;color:#2a1f06;font-weight:600;letter-spacing:.09em}
+.cnt{text-align:center;font-size:10px;color:#8a7430;margin-top:19px;padding-top:13px;border-top:1px dashed rgba(200,160,74,.45);line-height:1.6}
+.cac{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+@media print{body{background:#fff}.sim,.tb,.cac{display:none!important}.ct{box-shadow:none;max-width:none}}
+@media(max-width:900px){.pc{position:fixed;right:0;top:0;bottom:0;z-index:50;box-shadow:-12px 0 40px rgba(0,0,0,.5)}.sto{display:none}}
+</style>
+</head>
+<body>
+<div class="sim">⚠ Simulated training environment — all patients, prescriptions and results are fictitious · Not a medical record</div>
+<div class="tb">
+  <div class="mk">LU</div>
+  <div><b>Pharmacy Playground</b><small>LUCOP · College of Pharmacy</small></div>
+  <div class="sys hide" id="tbSys"><span class="lamp"></span><span id="tbSysN"></span></div>
+  <div class="rgt">
+    <button class="tbtn hide" id="bLob">⌂ All Systems</button>
+    <button class="tbtn hide" id="bCert">🎓 Finish &amp; Certify</button>
+    <button class="tbtn dz hide" id="bReset">↺ Reset Playground</button>
+    <div class="hide" id="tbU" style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:#c7d3e2">
+      <div class="av" id="tbAv">—</div><span id="tbN"></span></div>
+    <div class="clk mono" id="clk">--:--</div>
+  </div>
+</div>
+<div class="stage"><div class="scr" id="scr"></div></div>
+<script>
+"use strict";
+const $=s=>document.querySelector(s), esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const S={user:"",ini:"",screen:"login",sys:null,pcOpen:true,setKey:null,tIdx:0,hint:false,pick:null,fb:null,res:{},
+  rx:{view:"queue",sel:null,sigOut:"",dur:null,adj:null,msg:""},me:{pid:"m1",tab:"summary",ord:null}};
+
+/* ============ RETAIL DATA ============ */
+const PT={
+"P-1042":{name:"Pruitt, Harold G.",dob:"02/11/1951",sex:"M",wt:"88 kg",ph:"(555) 310-4428",
+ alrg:["Sulfa drugs — rash, 2008"],plan:"GoldStar Rx · BIN 610014 · PCN GSRX",
+ cond:["Type 2 diabetes","Hypertension","BPH"],
+ hist:[{d:"10/02/2026",g:"metFORMIN 1000 mg tab",q:"60",ds:"30"},{d:"10/02/2026",g:"lisinopril 20 mg tab",q:"30",ds:"30"},
+       {d:"09/04/2026",g:"metFORMIN 1000 mg tab",q:"60",ds:"30"},{d:"08/29/2026",g:"tamsulosin 0.4 mg cap",q:"30",ds:"30"}]},
+"P-2217":{name:"Delacroix, Simone",dob:"06/23/1988",sex:"F",wt:"63 kg",ph:"(555) 441-0092",
+ alrg:["No Known Drug Allergies"],plan:"Unity Health · BIN 004336 · PCN ADV",
+ cond:["Hypothyroidism","Migraine"],
+ hist:[{d:"10/14/2026",g:"levothyroxine 88 mcg tab",q:"30",ds:"30"},{d:"09/18/2026",g:"levothyroxine 75 mcg tab",q:"30",ds:"30"},
+       {d:"08/19/2026",g:"levothyroxine 75 mcg tab",q:"30",ds:"30"},{d:"07/20/2026",g:"sumatriptan 50 mg tab",q:"9",ds:"30"}]},
+"P-3390":{name:"Okonkwo, Bernard",dob:"11/30/1964",sex:"M",wt:"102 kg",ph:"(555) 772-6611",
+ alrg:["Penicillin — hives, 1998"],plan:"StateCare Medicaid · BIN 018331",
+ cond:["Chronic low back pain","GERD","Depression"],
+ hist:[{d:"09/26/2026",g:"oxyCODONE 5 mg tab",q:"60",ds:"20"},{d:"09/26/2026",g:"pantoprazole 40 mg tab",q:"30",ds:"30"},
+       {d:"09/01/2026",g:"sertraline 100 mg tab",q:"30",ds:"30"}]},
+"P-5501":{name:"Thibodeaux, Earl",dob:"01/19/1943",sex:"M",wt:"71 kg",ph:"(555) 668-1120",
+ alrg:["Codeine — nausea (intolerance)"],plan:"Medicare Part D · BIN 015599 · PCN MCR",
+ cond:["Atrial fibrillation","CKD stage 3b","Osteoarthritis"],
+ hist:[{d:"10/11/2026",g:"apixaban 5 mg tab",q:"60",ds:"30"},{d:"10/11/2026",g:"metoprolol succ ER 50 mg",q:"30",ds:"30"}]}};
+const Q0=[
+{id:"RX-89001",pid:"P-1042",drug:"sulfamethoxazole-trimethoprim DS 800-160 mg tablet",qw:20,dp:20,rf:0,
+ sig:"1 PO BID x 10D",pr:"Nkemdirim, A. MD",dea:"AN4471203",wr:"10/22/2026",st:"Waiting",iss:"allergy",pz:14.80,cp:10.00,ndc:"00093-0105-01"},
+{id:"RX-89002",pid:"P-2217",drug:"levothyroxine 88 mcg tablet",qw:30,dp:30,rf:5,
+ sig:"1 PO QAM AC",pr:"Stroud, Harriet NP",dea:"MS9930118",wr:"10/14/2026",st:"Rejected",iss:"rts",pz:12.40,cp:4.00,ndc:"00074-6624-90",rej:"79"},
+{id:"RX-89003",pid:"P-3390",drug:"oxyCODONE HCl 5 mg tablet  [CII]",qw:60,dp:60,rf:0,
+ sig:"1 PO Q6H PRN pain",pr:"Lindqvist, Pell MD",dea:"BL6620914",wr:"10/20/2026",st:"Waiting",iss:"cii",pz:28.90,cp:3.00,ndc:"00406-0512-01"},
+{id:"RX-89004",pid:"P-5501",drug:"ibuprofen 800 mg tablet",qw:90,dp:90,rf:1,
+ sig:"1 PO TID PRN",pr:"Castellanos, M. MD",dea:"BC3318877",wr:"10/21/2026",st:"Waiting",iss:"nsaid",pz:9.20,cp:0.00,ndc:"00904-7912-80"},
+{id:"RX-89005",pid:"P-1042",drug:"metFORMIN HCl 1000 mg tablet",qw:60,dp:60,rf:3,
+ sig:"1 PO BID WM",pr:"Nkemdirim, A. MD",dea:"AN4471203",wr:"10/02/2026",st:"Waiting",iss:"clean",pz:8.10,cp:0.00,ndc:"00093-7214-98"}];
+const SIGM={"1":"Take 1 tablet","2":"Take 2 tablets","po":"by mouth","qd":"once daily","daily":"once daily",
+"bid":"twice daily","tid":"three times daily","qid":"four times daily","q6h":"every 6 hours","q8h":"every 8 hours",
+"q12h":"every 12 hours","qam":"every morning","qpm":"every evening","qhs":"at bedtime","prn":"as needed",
+"ac":"before meals","pc":"after meals","wm":"with meals","wf":"with food"};
+function xlat(raw){
+  if(!raw.trim())return"";
+  let o=[],dur="",pn="";
+  raw.trim().split(/\s+/).forEach(t=>{const k=t.toLowerCase().replace(/[.,]/g,"");
+    if(/^x\d+d?$/.test(k)){dur=" for "+k.replace(/[xd]/g,"")+" days";return;}
+    if(["pain","nausea","anxiety","cough"].includes(k)){pn=" for "+k;return;}
+    o.push(SIGM[k]||t);});
+  return (o.join(" ")+pn+dur).replace(/\s+/g," ").trim()+".";
+}
+
+/* ============ INPATIENT DATA ============ */
+const ME={
+m1:{ini:"MA",hue:"#7fd1d1",name:"Alvarez-Finn, Marguerite R.",mrn:"110-48-72",age:68,sex:"F",dob:"03/14/1958",
+ room:"4W-12",unit:"4 West Telemetry",los:"Day 3",wt:"75.0 kg",ht:"162 cm",scr:1.46,code:"Full Code",
+ diet:"2 g Na, 1.5 L fluid restriction",att:"Rhee, A. MD",
+ alrg:[{a:"Lisinopril",r:"Angioedema — lip/tongue swelling"},{a:"Sulfamethoxazole-TMP",r:"Diffuse rash"}],
+ dx:"Acute on chronic systolic heart failure (HFrEF, EF 30%)",
+ sum:"68 y/o F with HFrEF (EF 30%), CKD 3a and persistent AFib admitted 10/19 with acute decompensated heart failure. Diuresing well on IV furosemide, net −3.1 L. Creatinine rose from 1.28 to 1.46 and has plateaued. Potassium is 5.2 this morning; spironolactone and potassium chloride were both held. Transition to an oral diuretic is planned with discharge anticipated in 48 hours.",
+ meds:[{n:"furosemide (LASIX) injection",s:"40 mg IV push q12h",i:"Volume overload",d:[{t:"10/22 0800",s:"Given"},{t:"10/22 2000",s:"Due"}]},
+  {n:"sacubitril-valsartan (ENTRESTO)",s:"49-51 mg PO BID",i:"HFrEF — GDMT",d:[{t:"10/22 0900",s:"Given"},{t:"10/22 2100",s:"Due"}]},
+  {n:"spironolactone (ALDACTONE)",s:"25 mg PO daily",i:"HFrEF — GDMT",d:[{t:"10/22 0900",s:"Held — K+ 5.2, MD notified"}]},
+  {n:"potassium chloride ER",s:"20 mEq PO daily",i:"Hypokalemia",d:[{t:"10/22 0900",s:"Held — K+ 5.2"}]},
+  {n:"apixaban (ELIQUIS)",s:"5 mg PO BID",i:"Stroke prophylaxis, AFib",d:[{t:"10/22 0900",s:"Given"},{t:"10/22 2100",s:"Due"}]},
+  {n:"metoprolol succinate (TOPROL-XL)",s:"50 mg PO daily",i:"AFib rate control",d:[{t:"10/22 0900",s:"Given"}]}],
+ labs:[{n:"Sodium",v:134,u:"mmol/L",lo:135,hi:145},{n:"Potassium",v:5.2,u:"mmol/L",lo:3.5,hi:5.1},
+  {n:"CO2",v:32,u:"mmol/L",lo:22,hi:29},{n:"BUN",v:38,u:"mg/dL",lo:7,hi:20},
+  {n:"Creatinine",v:1.46,u:"mg/dL",lo:0.6,hi:1.1},{n:"Magnesium",v:2.1,u:"mg/dL",lo:1.7,hi:2.4},
+  {n:"Hemoglobin",v:9.6,u:"g/dL",lo:12.0,hi:15.5},{n:"BNP",v:742,u:"pg/mL",lo:0,hi:100}],
+ vit:{t:"36.8 °C",hr:"74 bpm",bp:"114/65",rr:"17 /min",o2:"97 % RA"},
+ notes:[{ty:"Progress Note — Hospitalist",au:"A. Rhee, MD",dt:"10/22 08:52",b:
+`ASSESSMENT & PLAN
+1. Acute on chronic HFrEF — responding well to IV diuresis. Continue furosemide 40 mg IV q12h today; convert to torsemide 20 mg PO daily tomorrow.
+2. Hyperkalemia (K 5.2) — likely multifactorial from spironolactone, the ARNI, and declining GFR. Spironolactone and KCl held today. Repeat BMP at 1600.
+3. Cardiorenal — creatinine bump of 0.18 is acceptable given clinical response and has plateaued over 48 hours.
+4. Persistent AFib — rate controlled. Apixaban continued; CHA2DS2-VASc 5.
+Pharmacy consulted for renal dose review of all active medications.`}]},
+m2:{ini:"EB",hue:"#f3b562",name:"Boateng, Elias K.",mrn:"226-71-40",age:74,sex:"M",dob:"08/02/1952",
+ room:"3E-11",unit:"3 East Step-Down",los:"Day 5",wt:"68.0 kg",ht:"172 cm",scr:2.10,code:"Full Code",
+ diet:"Regular",att:"Rhee, A. MD",
+ alrg:[{a:"No Known Drug Allergies",r:"—"}],
+ dx:"MRSA bacteremia secondary to infected dialysis access",
+ sum:"74 y/o M on vancomycin for MRSA bacteremia, day 5. A trough drawn before the 0600 dose returned at 24.8 mcg/mL — supratherapeutic against a goal of 15 to 20 for bacteremia. Serum creatinine has climbed from 1.42 to 2.10 over three days. Nephrotoxicity is the leading concern and the regimen requires adjustment before the next dose is given.",
+ meds:[{n:"vancomycin IV",s:"1,500 mg IV q12h",i:"MRSA bacteremia",d:[{t:"10/22 0600",s:"Given"},{t:"10/22 1800",s:"Due"}]},
+  {n:"piperacillin-tazobactam",s:"3.375 g IV q8h",i:"Empiric coverage",d:[{t:"10/22 0600",s:"Given"},{t:"10/22 1400",s:"Due"}]},
+  {n:"acetaminophen",s:"650 mg PO q6h PRN",i:"Fever",d:[{t:"10/22 0400",s:"Given"}]},
+  {n:"heparin subQ",s:"5,000 units subQ q8h",i:"VTE prophylaxis",d:[{t:"10/22 0600",s:"Given"},{t:"10/22 1400",s:"Due"}]}],
+ labs:[{n:"Vancomycin trough",v:24.8,u:"mcg/mL",lo:10,hi:20},{n:"Creatinine",v:2.10,u:"mg/dL",lo:0.6,hi:1.3},
+  {n:"BUN",v:44,u:"mg/dL",lo:7,hi:20},{n:"WBC",v:12.6,u:"K/uL",lo:4.0,hi:11.0},
+  {n:"Potassium",v:4.4,u:"mmol/L",lo:3.5,hi:5.1},{n:"Platelets",v:188,u:"K/uL",lo:150,hi:400}],
+ vit:{t:"37.9 °C",hr:"96 bpm",bp:"118/70",rr:"19 /min",o2:"95 % RA"},
+ notes:[{ty:"Pharmacy Consult Note",au:"I. Sato, PharmD",dt:"10/22 09:30",b:
+`Vancomycin trough 24.8 mcg/mL (goal 15–20 for bacteremia), drawn appropriately 30 minutes pre-dose.
+Serum creatinine trending up: 1.42 → 1.76 → 2.10 over 72 hours. Estimated creatinine clearance has fallen accordingly.
+The current regimen of 1,500 mg q12h is excessive for present renal function.
+RECOMMENDATION: hold the 1800 dose, extend the dosing interval, and redose based on a repeat level. Avoid concurrent nephrotoxins where possible — note that piperacillin-tazobactam also requires renal adjustment and carries additive nephrotoxicity risk with vancomycin.
+Discussed with the primary team; awaiting order.`}]},
+m3:{ini:"TR",hue:"#9fdba6",name:"Nakamura-Reyes, Theo J.",mrn:"553-82-21",age:8,sex:"M",dob:"05/08/2018",
+ room:"2S-03",unit:"Pediatrics — 2 South",los:"Day 2",wt:"26.8 kg",ht:"128 cm",scr:0.42,code:"Full Code",
+ diet:"Regular pediatric — STRICT peanut/tree nut free",att:"Oyelowo, F. MD",
+ alrg:[{a:"Peanuts",r:"Anaphylaxis — epinephrine required 2022"},{a:"Cashew",r:"Lip swelling, hives"}],
+ dx:"Moderate asthma exacerbation, rhinovirus-triggered",
+ sum:"8 y/o M with moderate persistent asthma admitted with a rhinovirus-triggered exacerbation on a background of a three-week controller gap at school. Weaned from continuous to q4h albuterol with good response. Peak flow improved from 52% to 78% of personal best. All orders are weight-based against a documented weight of 26.8 kg.",
+ meds:[{n:"albuterol nebulized",s:"2.5 mg nebulized q4h",i:"Bronchospasm",d:[{t:"10/22 0800",s:"Given"},{t:"10/22 1200",s:"Due"}]},
+  {n:"dexamethasone",s:"0.6 mg/kg (16 mg) PO daily x 2 days",i:"Exacerbation",d:[{t:"10/22 0900",s:"Given — course complete"}]},
+  {n:"fluticasone (FLOVENT HFA)",s:"110 mcg, 1 puff BID with spacer",i:"Controller",d:[{t:"10/22 0900",s:"Given"},{t:"10/22 2100",s:"Due"}]},
+  {n:"epinephrine auto-injector (EPIPEN JR)",s:"0.15 mg IM x 1 PRN anaphylaxis",i:"Rescue — at bedside",d:[]}],
+ labs:[{n:"Potassium",v:3.8,u:"mmol/L",lo:3.5,hi:5.1},{n:"CO2",v:24,u:"mmol/L",lo:22,hi:29},
+  {n:"WBC",v:9.8,u:"K/uL",lo:4.5,hi:13.5},{n:"Eosinophils",v:6.8,u:"%",lo:0,hi:5},
+  {n:"Creatinine",v:0.42,u:"mg/dL",lo:0.3,hi:0.7}],
+ vit:{t:"36.7 °C",hr:"94 bpm",bp:"102/62",rr:"20 /min",o2:"98 % RA"},
+ notes:[{ty:"Progress Note — Pediatrics",au:"F. Oyelowo, MD",dt:"10/22 10:12",b:
+`Weaned to q4h albuterol with sustained response. Peak flow 210 L/min, 78% of his personal best of 270.
+The controller gap is the real story — the school's supply of Flovent ran out in late September and the refill authorization never came through, so roughly three weeks of controller therapy were missed.
+Pharmacy: please verify all weight-based doses against the documented weight of 26.8 kg and prepare discharge counseling on spacer technique.
+Peanut and tree nut allergy — strict avoidance, EpiPen Jr at bedside.`}]}};
+
+/* ============ TASKS ============ */
+const TASKS={
+rx:{sets:[
+ {k:"a",name:"Patient Profile Review",items:[
+  {id:"a1",t:"find",q:"Open RX-89001 and pull up Harold Pruitt's profile. What drug class is he documented as allergic to?",
+   a:["sulfa","sulfonamide"],h:"The allergy strip sits at the top of the profile panel, in red.",
+   w:"RX-89001 is sulfamethoxazole-trimethoprim — a sulfonamide. This is a true allergy-to-drug match and the most important catch on this queue."},
+  {id:"a2",t:"judg",q:"Given that allergy, what is the correct action on RX-89001?",
+   o:["Fill it — his reaction was only a rash, not anaphylaxis","Fill it but add a counseling note about possible rash",
+      "Do not fill. Contact the prescriber to recommend an alternative agent","Fill a reduced quantity so he can test tolerance"],
+   ans:2,h:"A documented allergy to the exact class being prescribed is a hard stop, not a judgment call about severity.",
+   w:"Rash can precede a more severe reaction on re-exposure, and the decision to proceed belongs to the prescriber — documented in the record. Try pressing Verify & Fill on this one; the system will refuse."},
+  {id:"a3",t:"find",q:"Look at Simone Delacroix's fill history. On what date was her levothyroxine 75 mcg last filled? (MM/DD/YYYY)",
+   a:["09/18/2026","9/18/2026"],h:"Her profile lists two different strengths. Find the most recent 75 mcg entry, not the 88 mcg.",
+   w:"Noticing that the strength changed between fills is the skill here. A dose change is one of the most common legitimate reasons a refill looks 'too soon.'"},
+  {id:"a4",t:"calc",q:"RX-89005: metformin 1000 mg, sig 1 tablet twice daily, quantity 60. Enter the day supply.",
+   a:30,tol:0,u:"days",h:"Total quantity divided by the number of units taken per day.",
+   w:"60 ÷ 2 = 30 days. Day supply drives refill timing, insurance edits, and the refill-too-soon logic you will meet constantly."}]},
+ {k:"b",name:"Rejections & Overrides",items:[
+  {id:"b1",t:"find",q:"Open RX-89002 and press Adjudicate Claim. What two-digit rejection code comes back?",
+   a:["79"],h:"Click the Rx in the queue, then Adjudicate. The code appears in the red response box.",
+   w:"Code 79 is Refill Too Soon. Knowing the common codes by number — 70 not covered, 75 prior authorization, 79 refill too soon — lets you triage a queue fast."},
+  {id:"b2",t:"judg",q:"Her profile shows levothyroxine 75 mcg last filled 09/18 for 30 days, and the new prescription is for 88 mcg. Best action?",
+   o:["Tell her to come back after 10/18 when the fill is due",
+      "Submit a change-in-therapy override — the strength changed, so this is new therapy, not an early refill",
+      "Have her pay cash and reverse it later","Reject the prescription back to the prescriber"],
+   ans:1,h:"Ask what actually changed between the last fill and this one.",
+   w:"A strength change makes this a new prescription rather than an early refill. Most plans accept a change-in-therapy override. Recognizing the legitimate exception is what separates reflexive rejection from real problem solving."},
+  {id:"b3",t:"judg",q:"A different claim returns code 70 — product not covered. What is the most appropriate first step?",
+   o:["Tell the patient the drug is unavailable","Check the formulary for a covered alternative and propose it to the prescriber",
+      "Fill at full cash price without telling the patient","Resubmit the claim until it pays"],
+   ans:1,h:"Code 70 is about coverage, not safety or legality.",
+   w:"Code 70 is a formulary problem with a solvable path. Identifying a covered alternative and proposing it keeps the patient on therapy — and it is a core pharmacist contribution."}]},
+ {k:"c",name:"Controlled Substances & DUR",items:[
+  {id:"c1",t:"judg",q:"RX-89003 is oxycodone 5 mg, a Schedule II. How many refills may legally be authorized?",
+   o:["Up to 5 refills within 6 months","Up to 3 refills","Zero — refills are not permitted on Schedule II prescriptions","Unlimited if written PRN"],
+   ans:2,h:"Federal law treats CII differently from CIII–CV in exactly this respect.",
+   w:"No refills are permitted on a CII prescription. Each fill requires a new prescription. This is foundational and comes up on nearly every early rotation."},
+  {id:"c2",t:"find",q:"Open RX-89003. What is the prescriber's DEA number as entered?",
+   a:["bl6620914"],h:"It appears in the prescriber block of the entry screen.",
+   w:"Verifying that a valid, correctly formatted DEA number is present is required on every controlled prescription. The first letter denotes registrant type; the second matches the prescriber's last initial."},
+  {id:"c3",t:"calc",q:"RX-89003: quantity 60, sig 1 tablet every 6 hours as needed. Enter the maximum day supply you would bill.",
+   a:15,tol:0,u:"days",h:"Every 6 hours is four doses in 24 hours at maximum use.",
+   w:"60 ÷ 4 = 15 days. PRN controlled substances are billed at the maximum daily dose, not an estimate of actual use — under-billing day supply creates false early-refill flags later."},
+  {id:"c4",t:"judg",q:"Bernard Okonkwo's last oxycodone fill was 09/26 for a 20-day supply. Today is 10/22. Correct response?",
+   o:["Refuse — he is filling early and this is diversion","Fill immediately without review since it is a new prescription",
+      "The prior supply ran out 10/16, so timing is appropriate; verify the prescription, check the PDMP, then fill","Call the police"],
+   ans:2,h:"Count forward 20 days from 09/26 before judging the timing.",
+   w:"09/26 plus 20 days is 10/16 — the previous supply is exhausted, so this request is appropriately timed. The right posture is neither reflexive suspicion nor reflexive filling: verify, check the PDMP, document."},
+  {id:"c5",t:"judg",q:"RX-89004 is ibuprofen 800 mg TID for Earl Thibodeaux. Run the DUR check and review his profile. Most significant finding?",
+   o:["Ibuprofen and metoprolol — a minor blood pressure interaction",
+      "NSAID plus apixaban — substantially increased bleeding risk, compounded by CKD stage 3b",
+      "No clinically meaningful interaction","Ibuprofen and his codeine intolerance"],
+   ans:1,h:"Look at what he already takes for atrial fibrillation, then consider his kidney function.",
+   w:"An NSAID added to a direct oral anticoagulant meaningfully raises bleeding risk, and chronic NSAID use in CKD 3b risks further renal decline. This is a call-the-prescriber intervention, not a counseling point."}]}
+]},
+me:{sets:[
+ {k:"a",name:"Chart Navigation",items:[
+  {id:"d1",t:"find",q:"Open Marguerite Alvarez-Finn and go to Results. What is her potassium today? (number only)",
+   a:["5.2"],h:"The Results tab lists the metabolic panel with flags.",
+   w:"K+ 5.2 is the value driving today's medication decisions. Finding a single lab value fast is the most-used skill in inpatient pharmacy."},
+  {id:"d2",t:"find",q:"Her storyboard lists two drug allergies. Which one caused angioedema?",
+   a:["lisinopril"],h:"Check the amber allergy band on the left rail.",
+   w:"ACE inhibitor angioedema is a permanent contraindication to the whole class — and it matters here because she takes an ARNI, which carries its own angioedema precaution."},
+  {id:"d3",t:"judg",q:"Two scheduled medications were held this morning. Open the MAR and read the status text. What was the documented reason?",
+   o:["Low blood pressure","Elevated potassium at 5.2 mmol/L","Patient refusal","Rising creatinine alone"],
+   ans:1,h:"Held doses display the reason directly on the dose chip.",
+   w:"Spironolactone and potassium chloride were both held for hyperkalemia. Connecting a held dose to the lab value that caused it is exactly the reasoning an inpatient pharmacist performs on every profile review."},
+  {id:"d4",t:"find",q:"What is her documented weight in kilograms? (number only)",
+   a:["75"],h:"Measurements section of the storyboard rail.",
+   w:"Weight drives renal estimation and weight-based dosing. Always confirm it in the chart — admission weight and today's weight often differ, especially in heart failure."}]},
+ {k:"b",name:"Verification & Renal Dosing",items:[
+  {id:"e1",t:"calc",q:"Switch to Elias Boateng. Using Cockcroft-Gault — weight 68 kg, age 74, male, SCr 2.10 — calculate creatinine clearance in mL/min. Round to a whole number.",
+   a:30,tol:3,u:"mL/min",h:"CrCl = [(140 − age) × weight] ÷ (72 × SCr). No multiplier for males. The Vitals tab has the formula.",
+   w:"(140 − 74) × 68 ÷ (72 × 2.10) ≈ 30 mL/min. Severe renal impairment. Nearly every antimicrobial decision for this patient flows from this number."},
+  {id:"e2",t:"find",q:"What is his vancomycin trough level? (number only)",
+   a:["24.8"],h:"Results tab — it is flagged above range.",
+   w:"A trough of 24.8 against a goal of 15–20 for bacteremia is supratherapeutic, and paired with rising creatinine it points toward vancomycin-associated nephrotoxicity."},
+  {id:"e3",t:"judg",q:"Trough 24.8 and creatinine up from 1.42 to 2.10 over three days. Most appropriate recommendation?",
+   o:["Continue 1,500 mg q12h and recheck in a week","Increase the dose — the infection is not controlled",
+      "Hold the next dose, extend the dosing interval, and redose based on a repeat level","Stop vancomycin and switch to oral therapy"],
+   ans:2,h:"The level is too high and the kidneys are declining. What changes — the amount per dose, or how often it is given?",
+   w:"With a supratherapeutic trough and declining renal function, holding and extending the interval is standard. Stopping outright would undertreat MRSA bacteremia; continuing unchanged risks further kidney injury."},
+  {id:"e4",t:"judg",q:"Which other medication on his list most warrants review given the rising creatinine?",
+   o:["Acetaminophen PRN","Heparin 5,000 units subQ q8h","Piperacillin-tazobactam 3.375 g IV q8h","None — vancomycin is the only concern"],
+   ans:2,h:"One of these is renally dosed and carries additive nephrotoxicity with vancomycin.",
+   w:"Pip-tazo requires renal dose adjustment, and the vancomycin–pip/tazo combination has well-described additive nephrotoxicity. Reviewing the whole profile rather than just the flagged drug is the point."}]},
+ {k:"c",name:"Pediatric Dosing & Order Entry",items:[
+  {id:"f1",t:"find",q:"Switch to Theo Nakamura-Reyes. What is his documented weight in kilograms? (number only)",
+   a:["26.8"],h:"Storyboard rail, measurements section.",
+   w:"Every pediatric order is checked against this number. Verifying weight before any dose calculation is non-negotiable in pediatrics."},
+  {id:"f2",t:"calc",q:"His dexamethasone was ordered at 0.6 mg/kg. Using his weight, what dose in milligrams does that produce? Round to a whole number.",
+   a:16,tol:1,u:"mg",h:"Multiply the per-kilogram dose by the weight in kilograms.",
+   w:"0.6 × 26.8 = 16.1 mg, matching the 16 mg ordered. Independently recalculating rather than trusting the screen is the habit that catches tenfold errors."},
+  {id:"f3",t:"judg",q:"He has a severe peanut allergy with prior anaphylaxis. Which verification step matters most before dispensing any oral medication?",
+   o:["Confirm the product is sugar-free","Review inactive ingredients for peanut or tree nut-derived excipients and confirm rescue epinephrine is available",
+      "Nothing additional — the allergy affects food only","Switch all oral medications to intravenous"],
+   ans:1,h:"Allergens can appear somewhere other than the active ingredient.",
+   w:"Excipients matter, and pharmacists are the last safeguard on inactive ingredients. Confirming rescue medication availability is part of a complete allergy review."},
+  {id:"f4",t:"judg",q:"Go to the Order Entry tab on his chart and try submitting an order with a field left blank. What does the system require?",
+   o:["Nothing — any entry is accepted","A documented indication and all required fields completed","Only the drug name","Supervisor approval for every order"],
+   ans:1,h:"Submit the form with something missing and read the rejection message.",
+   w:"Order entry systems enforce structured fields precisely because free-text orders are where errors hide. Learning to read what a system rejects — and why — transfers to every EHR you will ever use."}]}
+]}};
+const META={
+ rx:{code:"SYS-01",name:"RxOne Dispensing",sub:"Community / retail pharmacy",spine:"#008080",
+  desc:"A dispensing workstation with a live prescription queue, patient profiles, third-party adjudication, DUR alerts and controlled substance scenarios. Translate sigs, enter day supply, adjudicate claims, and decide what to fill.",
+  skills:["Triage a prescription queue","Translate and enter a sig","Interpret rejection codes 70, 75 and 79","Apply controlled substance rules","Act on DUR and allergy alerts"]},
+ me:{code:"SYS-02",name:"Meridian Inpatient",sub:"Hospital electronic health record",spine:"#0f8b8d",
+  desc:"A hospital chart with patient storyboards, a medication administration record, flagged lab panels, clinical notes and live order entry. Three patients spanning heart failure, antimicrobial monitoring and pediatrics.",
+  skills:["Navigate a storyboard and activity tabs","Locate a lab value quickly","Calculate creatinine clearance","Verify weight-based pediatric doses","Enter a structured medication order"]}};
+
+/* ============ PROGRESS ============ */
+const items=s=>TASKS[s].sets.flatMap(x=>x.items);
+function setP(s,k){const st=TASKS[s].sets.find(x=>x.k===k);
+ return{d:st.items.filter(i=>S.res[i.id]&&S.res[i.id].ok).length,t:st.items.length};}
+function sysP(s){const it=items(s);return{d:it.filter(i=>S.res[i.id]&&S.res[i.id].ok).length,t:it.length};}
+function totP(){let d=0,t=0;["rx","me"].forEach(s=>{const p=sysP(s);d+=p.d;t+=p.t;});return{d,t};}
+const nrm=s=>String(s).toLowerCase().trim().replace(/[.,;:!?]+$/,"").replace(/\s+/g," ");
+const flg=(v,lo,hi)=>v>hi?{c:"ch1",l:"HIGH",x:"#b87503"}:v<lo?{c:"cl1",l:"LOW",x:"#1a4e8f"}:{c:"co1",l:"WNL",x:"#1f7a4d"};
+function tick(){const d=new Date(),e=$("#clk");if(e)e.textContent=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");}
+setInterval(tick,10000);
+
+/* ============ VIEWS ============ */
+function vLogin(){return `<div class="lg"><div class="lgc">
+<div class="lgm">LU</div><h1>Pharmacy <span>Playground</span></h1>
+<p class="tag">Two simulated practice systems for first-year student pharmacists. Navigate a real-feeling interface, complete guided tasks, and build the habits you'll need before your first IPPE shift.</p>
+<div class="fld"><label for="iN">Your full name — appears on your certificate</label><input id="iN" type="text" placeholder="e.g. Jordan Castellanos"></div>
+<div class="fld"><label for="iI">Initials — your sign-on for the simulated systems</label><input id="iI" type="text" maxlength="3" placeholder="e.g. JC" style="text-transform:uppercase"></div>
+<button class="bp" id="goL">Sign On to Workstation</button>
+<p class="fine">Nothing you enter is transmitted or stored anywhere. This page runs entirely in your browser and closing it clears everything. All patients, prescriptions and results are fictitious.</p>
+</div></div>`;}
+
+function vLobby(){const tp=totP();
+ return `<div class="lob"><div class="eyb">LUCOP · College of Pharmacy</div>
+ <h1>Choose a practice system.</h1>
+ <p>Each system is a working simulation with its own interface, its own patients and its own guided task sets. Work through them in any order — progress carries across both, and you can generate a certificate when you're done.</p>
+ <div class="stats">
+  <div class="st"><b>2</b><span>Systems</span></div><div class="st"><b>6</b><span>Task sets</span></div>
+  <div class="st"><b>${tp.t}</b><span>Total tasks</span></div><div class="st"><b>${tp.d}</b><span>Completed</span></div>
+  <div class="st"><b>${tp.t?Math.round(tp.d/tp.t*100):0}%</b><span>Overall</span></div></div>
+ <div class="grid">${["rx","me"].map(k=>{const m=META[k],p=sysP(k),pc=Math.round(p.d/p.t*100);
+  return `<div class="card"><div class="spine" style="background:${m.spine}"></div><div class="cin">
+   <div class="cde">${m.code}</div><h3>${m.name}</h3><div class="csub">${m.sub}</div>
+   <div class="cds">${m.desc}</div>
+   <div class="sk"><h4>What you practice</h4><ul>${m.skills.map(s=>`<li>${s}</li>`).join("")}</ul></div>
+   <div class="pills"><span class="pl">${TASKS[k].sets.length} task sets</span><span class="pl">${p.t} tasks</span>
+    <span class="pl ${pc===100?"d":""}">${pc}% complete</span></div>
+   <button class="lnc" data-open="${k}">${p.d?"Resume":"Launch"} ${m.name} →</button></div></div>`;}).join("")}</div>
+ <p class="note" style="margin-top:24px;max-width:78ch">Best used on a laptop or desktop. These interfaces reproduce the information density of real pharmacy software, which doesn't compress well onto a phone.</p></div>`;}
+
+function vPC(){const s=S.sys;
+ if(!S.pcOpen)return `<aside class="pc col"><div class="pch"><button id="pcT" style="font-size:15px;color:#7b8ca3">‹</button></div></aside>`;
+ const sets=TASKS[s].sets;let body;
+ if(!S.setKey){
+  body=`<div class="pcb"><p class="note" style="margin:0 0 12px">Pick a task set. You'll navigate the system on the left to find each answer — the panel won't tell you where to look unless you ask for a hint.</p>
+  ${sets.map(x=>{const p=setP(s,x.k);return `<button class="sb" data-set="${x.k}"><strong>${x.name}</strong>
+   <span>${p.d} of ${p.t} complete</span><span class="bar"><i style="width:${Math.round(p.d/p.t*100)}%"></i></span></button>`;}).join("")}</div>`;
+ }else{
+  const st=sets.find(x=>x.k===S.setKey),it=st.items[S.tIdx];
+  const kl={find:"FIND IT",judg:"JUDGMENT",calc:"CALCULATE"}[it.t],kc={find:"k1",judg:"k2",calc:"k3"}[it.t];
+  const dots=st.items.map((x,i)=>{const r=S.res[x.id];
+   return `<i class="${i===S.tIdx?"n":r?(r.ok?"p":"f"):""}"></i>`;}).join("");
+  const inp=it.t==="judg"
+   ?`<div class="chs">${it.o.map((o,i)=>`<button class="ch ${S.pick===i?"s":""}" data-ch="${i}">${esc(o)}</button>`).join("")}</div>`
+   :`<input type="text" id="tA" placeholder="${it.t==="calc"?"Enter a number"+(it.u?" ("+it.u+")":""):"Type your answer"}" autocomplete="off">`;
+  const dn=S.res[it.id]&&S.res[it.id].ok;
+  body=`<div class="pcb">
+   <button class="sb" id="bk" style="padding:7px 10px"><strong style="font-size:11.5px">‹ ${esc(st.name)}</strong><span>${setP(s,S.setKey).d}/${st.items.length} complete — change set</span></button>
+   <div class="drow">${dots}</div>
+   <div class="tc"><span class="tn">TASK ${S.tIdx+1} OF ${st.items.length}</span><span class="kd ${kc}">${kl}</span>
+    <div class="tq">${esc(it.q)}</div>${inp}
+    <div class="acts"><button class="bchk" id="bC">${dn?"Checked ✓":"Check Answer"}</button><button class="bhnt" id="bH">Hint</button></div>
+    ${S.fb?`<div class="fb ${S.fb.k}"><strong>${S.fb.h}</strong>${esc(S.fb.m)}${S.fb.w?`<span class="why">${esc(S.fb.w)}</span>`:""}</div>`:""}
+    ${S.hint&&!S.fb?`<div class="fb h"><strong>Hint</strong>${esc(it.h)}</div>`:""}</div>
+   <div class="pf"><button id="tP" ${S.tIdx===0?"disabled style=opacity:.4":""}>‹ Previous</button>
+    <button id="tN">${S.tIdx===st.items.length-1?"Finish set":"Next ›"}</button></div>
+   <div class="pf"><button id="rS">↺ Reset this task set</button></div></div>`;
+ }
+ return `<aside class="pc"><div class="pch"><h2>Preceptor Tasks</h2><button id="pcT" style="font-size:15px;color:#7b8ca3">›</button></div>${body}</aside>`;}
+
+/* ---- RxOne ---- */
+function vRx(){const q=S.q;let main;
+ if(S.rx.view==="queue"){
+  main=`<div class="pnl"><h3>Prescription Queue — Store 0442 · ${q.length} items</h3><div class="pb" style="padding:0">
+   <table class="t"><thead><tr><th>Rx Number</th><th>Patient</th><th>Drug</th><th>Qty</th><th>Written</th><th>Status</th></tr></thead>
+   <tbody>${q.map(r=>{const p=PT[r.pid];const sc={Waiting:"sw",Rejected:"sr",Hold:"sh",Filled:"sd"}[r.st]||"sw";
+    return `<tr data-rx="${r.id}"><td class="mono"><b>${r.id}</b></td>
+    <td>${esc(p.name)}<br><span class="mono" style="font-size:10.5px;color:#5a645e">${r.pid}</span></td>
+    <td>${esc(r.drug)}</td><td class="mono">${r.qw}</td><td class="mono">${r.wr}</td>
+    <td><span class="s ${sc}">${r.st}</span></td></tr>`;}).join("")}</tbody></table></div></div>
+  <div class="pnl"><h3>Patient Lookup</h3><div class="pb">
+   <table class="t"><thead><tr><th>ID</th><th>Name</th><th>DOB</th><th>Allergies</th><th>Plan</th></tr></thead>
+   <tbody>${Object.entries(PT).map(([id,p])=>`<tr data-pt="${id}"><td class="mono">${id}</td><td>${esc(p.name)}</td>
+    <td class="mono">${p.dob}</td><td style="${p.alrg[0].startsWith("No Known")?"":"color:#a61632;font-weight:700"}">${esc(p.alrg.join("; "))}</td>
+    <td style="font-size:11.5px">${esc(p.plan)}</td></tr>`).join("")}</tbody></table></div></div>`;
+ }else if(S.rx.view==="prof"){
+  const p=PT[S.rx.sel];
+  main=`<button class="b" id="bk2" style="margin-bottom:12px">‹ Back to Queue</button>
+  <div class="pnl"><h3>Patient Profile — ${esc(p.name)}</h3><div class="pb">
+   ${p.alrg[0].startsWith("No Known")?`<div class="ab p" style="margin-top:0"><h4>Allergy Status</h4>No Known Drug Allergies on file.</div>`
+    :`<div class="alrg">⚠ ALLERGY ON FILE — ${esc(p.alrg.join(" · "))}</div>`}
+   <div class="fx"><div class="pcard"><h4>Demographics</h4>
+    <dl class="kv"><dt>Patient ID</dt><dd>${S.rx.sel}</dd><dt>Date of birth</dt><dd>${p.dob}</dd>
+    <dt>Sex</dt><dd>${p.sex}</dd><dt>Weight</dt><dd>${p.wt}</dd><dt>Phone</dt><dd>${esc(p.ph)}</dd></dl>
+    <h4 style="margin-top:12px">Third Party</h4><div class="mono" style="font-size:11.5px">${esc(p.plan)}</div>
+    <h4 style="margin-top:12px">Conditions</h4><div style="font-size:12px">${p.cond.map(esc).join(" · ")}</div></div>
+   <div class="pcard"><h4>Fill History</h4><table class="t" style="font-size:11.5px">
+    <thead><tr><th>Date</th><th>Drug</th><th>Qty</th><th>DS</th></tr></thead>
+    <tbody>${p.hist.map(h=>`<tr><td class="mono">${h.d}</td><td>${esc(h.g)}</td><td class="mono">${h.q}</td><td class="mono">${h.ds}</td></tr>`).join("")}</tbody></table></div>
+   </div></div></div>`;
+ }else{
+  const r=q.find(x=>x.id===S.rx.sel),p=PT[r.pid];
+  main=`<button class="b" id="bk2" style="margin-bottom:12px">‹ Back to Queue</button>
+  <button class="b" id="bPr" style="margin-bottom:12px">View Patient Profile (F7)</button>
+  <div class="pnl"><h3>Prescription Entry — ${r.id}</h3><div class="pb">
+   ${!p.alrg[0].startsWith("No Known")?`<div class="alrg">⚠ PATIENT ALLERGY ON FILE — ${esc(p.alrg.join(" · "))}</div>`:""}
+   <div class="fx"><div><div class="fg">
+    <label>Patient</label><div class="ro">${esc(p.name)}</div>
+    <label>Patient ID</label><div class="ro">${r.pid}</div>
+    <label>Prescriber</label><div class="ro">${esc(r.pr)}</div>
+    <label>DEA #</label><div class="ro">${r.dea}</div>
+    <label>Item</label><div class="ro">${esc(r.drug)}</div>
+    <label>NDC</label><div class="ro">${r.ndc}</div>
+    <label>Qty written</label><div class="ro">${r.qw}</div>
+    <label for="fD">Dispense qty</label><input id="fD" type="text" value="${r.dp}">
+    <label for="fS">Day supply</label><input id="fS" type="text" placeholder="Enter days" value="${r.dsup||""}">
+    <label>Refills</label><div class="ro">${r.rf}</div>
+    <label for="fG">Sig (shorthand)</label><input id="fG" type="text" value="${esc(r.sig)}">
+    <div class="sig"><b>Patient-facing directions</b>${S.rx.sigOut?esc(S.rx.sigOut):'<span style="color:#8a7a3a">Press "Translate Sig" to expand the shorthand.</span>'}</div>
+    <label>Date written</label><div class="ro">${r.wr}</div>
+    <label>Plan</label><div class="ro" style="font-size:11px">${esc(p.plan)}</div>
+    <label>Price</label><div class="ro">$${r.pz.toFixed(2)}</div>
+    <label>Co-pay</label><div class="ro">$${r.cp.toFixed(2)}</div></div>
+    <div class="btns"><button class="b" id="bSig">Translate Sig (F4)</button>
+     <button class="b" id="bDur">Run DUR Check (F5)</button><button class="b" id="bAdj">Adjudicate Claim (F6)</button></div>
+    <div class="btns" style="border:0;padding-top:4px"><button class="b go" id="bFill">✓ Verify &amp; Fill</button>
+     <button class="b no" id="bRej">✕ Return to Prescriber</button><button class="b" id="bCall">☎ Call Prescriber</button></div>
+    ${S.rx.dur?`<div class="ab d"><h4>DUR Alert</h4>${S.rx.dur}</div>`:""}
+    ${S.rx.adj?`<div class="ab ${S.rx.adj.ok?"p":"r"}"><h4>Third Party Response</h4>${S.rx.adj.m}</div>`:""}
+    ${S.rx.msg?`<div class="ab ${S.rx.msg.startsWith("✓")?"p":"d"}"><h4>System Message</h4>${esc(S.rx.msg)}</div>`:""}
+   </div>
+   <div class="pcard"><h4>Patient Snapshot</h4>
+    <dl class="kv"><dt>DOB</dt><dd>${p.dob}</dd><dt>Weight</dt><dd>${p.wt}</dd><dt>Phone</dt><dd>${esc(p.ph)}</dd></dl>
+    <h4 style="margin-top:11px">Allergies</h4>
+    <div style="font-size:12px;${p.alrg[0].startsWith("No Known")?"":"color:#a61632;font-weight:700"}">${esc(p.alrg.join("; "))}</div>
+    <h4 style="margin-top:11px">Recent Fills</h4><table class="t" style="font-size:11px"><tbody>
+    ${p.hist.slice(0,4).map(h=>`<tr><td class="mono">${h.d}</td><td>${esc(h.g)}</td><td class="mono">${h.q}/${h.ds}d</td></tr>`).join("")}</tbody></table></div>
+   </div></div></div>`;
+ }
+ return `<div class="rx"><div class="rxm"><div class="lg2">RxONE</div>
+  <div class="mi" data-nav="1">Queue</div><div class="mi">Patients</div><div class="mi">Inventory</div><div class="mi">Reports</div>
+  <div class="who">RPH: ${esc(S.ini)} · STORE 0442</div></div>
+  <div class="rxmain">${main}</div>
+  <div class="fk"><span><b>F4</b> Translate Sig</span><span><b>F5</b> DUR</span><span><b>F6</b> Adjudicate</span>
+   <span><b>F7</b> Profile</span><span><b>F9</b> Fill</span></div></div>`;}
+
+/* ---- Meridian ---- */
+const MT=[["summary","Summary"],["mar","MAR"],["results","Results"],["vitals","Vitals"],["notes","Notes"],["order","Order Entry"]];
+function vMe(){const p=ME[S.me.pid];let pane="";
+ if(S.me.tab==="summary"){
+  pane=`<div class="mc"><header><h3>Hospital Problem</h3></header><div class="mb">
+   <div style="font-weight:700;font-size:14px">${esc(p.dx)}</div>
+   <div style="margin-top:8px"><span class="cp ct1">${p.los}</span> <span class="cp cn1">${esc(p.unit)}</span></div></div></div>
+  <div class="mc"><header><h3>Clinical Summary</h3><span class="rt">Updated today</span></header>
+   <div class="mb" style="line-height:1.7;max-width:92ch">${esc(p.sum)}</div></div>
+  <div class="mc"><header><h3>Latest Vital Signs</h3></header><div class="mb"><table class="m"><tbody>
+   ${Object.entries({Temperature:p.vit.t,"Heart rate":p.vit.hr,"Blood pressure":p.vit.bp,Respirations:p.vit.rr,"Oxygen saturation":p.vit.o2,Weight:p.wt})
+    .map(([k,v])=>`<tr><td>${k}</td><td class="n">${v}</td></tr>`).join("")}</tbody></table></div></div>`;
+ }else if(S.me.tab==="mar"){
+  pane=`<div class="mc"><header><h3>Medication Administration Record</h3><span class="rt">Click a DUE dose to document</span></header>
+   <div class="mb fl">${p.meds.map((m,i)=>`<div class="med"><div class="mn">${esc(m.n)}</div>
+    <div class="mg">${esc(m.s)}</div><div class="mi2">Indication: ${esc(m.i)}</div>
+    <div class="ds">${m.d.length?m.d.map((d,j)=>{const k=d.s.startsWith("Given")?"gv":d.s.startsWith("Held")?"hd":"du";
+     return k==="du"?`<button class="d1 du" data-dose="${i}-${j}"><span class="t">${d.t}</span>Due — document</button>`
+      :`<div class="d1 ${k}"><span class="t">${d.t}</span>${esc(d.s)}</div>`;}).join("")
+     :`<div class="d1"><span class="t">—</span>No doses scheduled</div>`}</div></div>`).join("")}</div></div>`;
+ }else if(S.me.tab==="results"){
+  pane=`<div class="mc"><header><h3>Laboratory Results</h3><span class="rt">Collected today 05:12</span></header><div class="mb fl">
+   <table class="m"><thead><tr><th>Component</th><th class="n">Result</th><th>Units</th><th>Reference</th><th style="text-align:right">Flag</th></tr></thead>
+   <tbody>${p.labs.map(l=>{const f=flg(l.v,l.lo,l.hi);
+    return `<tr><td>${esc(l.n)}</td><td class="n" style="color:${f.x};font-weight:700">${l.v}</td>
+    <td style="color:#78909c;font-size:11.5px">${esc(l.u)}</td><td class="n" style="color:#78909c;font-size:11.5px">${l.lo} – ${l.hi}</td>
+    <td style="text-align:right"><span class="cp ${f.c}">${f.l}</span></td></tr>`;}).join("")}</tbody></table></div></div>`;
+ }else if(S.me.tab==="vitals"){
+  pane=`<div class="mc"><header><h3>Vital Signs &amp; Measurements</h3></header><div class="mb fl"><table class="m"><tbody>
+   ${Object.entries({Temperature:p.vit.t,"Heart rate":p.vit.hr,"Blood pressure":p.vit.bp,"Respiratory rate":p.vit.rr,"SpO₂":p.vit.o2,
+    Weight:p.wt,Height:p.ht,"Serum creatinine":p.scr+" mg/dL",Age:p.age+" years",Sex:p.sex})
+    .map(([k,v])=>`<tr><td>${k}</td><td class="n">${v}</td></tr>`).join("")}</tbody></table></div></div>
+   <div class="mc"><header><h3>Renal Dosing Reference</h3></header><div class="mb" style="line-height:1.75">
+   <b>Cockcroft-Gault:</b> CrCl (mL/min) = [(140 − age) × weight in kg] ÷ (72 × serum creatinine)<br>
+   Multiply by 0.85 for female patients.<br>
+   <span style="color:#78909c;font-size:12px">This patient: age ${p.age}, weight ${p.wt}, SCr ${p.scr} mg/dL, sex ${p.sex}.</span></div></div>`;
+ }else if(S.me.tab==="notes"){
+  pane=`<div class="mc"><header><h3>Clinical Notes</h3><span class="rt">${p.notes.length} document(s)</span></header><div class="mb fl">
+   ${p.notes.map((n,i)=>`<div class="nt ${i===0?"op":""}"><button class="nth" data-note="${i}">
+    <div style="flex:1"><strong>${esc(n.ty)}</strong><span>${esc(n.au)} · ${n.dt}</span></div>
+    <span class="cp co1">Signed</span></button><div class="ntb">${esc(n.b)}</div></div>`).join("")}</div></div>`;
+ }else{
+  pane=`<div class="mc"><header><h3>Medication Order Entry</h3><span class="rt">Pharmacist verification required</span></header><div class="mb">
+   <div class="ob"><div class="o2">
+    <div><label for="oD">Medication</label><input id="oD" type="text" placeholder="e.g. albuterol nebulized"></div>
+    <div><label for="oS">Dose &amp; route</label><input id="oS" type="text" placeholder="e.g. 2.5 mg NEB"></div></div>
+   <div class="o2"><div><label for="oF">Frequency</label><select id="oF"><option value="">— select —</option>
+    <option>once</option><option>q4h</option><option>q6h</option><option>q8h</option><option>q12h</option><option>daily</option><option>BID</option><option>PRN</option></select></div>
+    <div><label for="oI">Indication (required)</label><input id="oI" type="text" placeholder="e.g. bronchospasm"></div></div>
+   <div style="display:flex;gap:9px;margin-top:4px"><button class="bt" id="oGo">Submit Order for Verification</button>
+    <button class="bg2" id="oCl">Clear</button></div>
+   ${S.me.ord?`<div class="ab ${S.me.ord.ok?"p":"r"}" style="margin-top:12px"><h4>${S.me.ord.ok?"Order Accepted":"Order Rejected"}</h4>${esc(S.me.ord.m)}</div>`:""}
+   <p class="note" style="color:#78909c">Weight on file: <b>${p.wt}</b>. Orders are range-checked against documented weight and will be rejected if a required field is blank.</p></div></div></div>`;
+ }
+ return `<div class="me"><div class="met"><b>Meridian<span>Health</span></b>
+  <span style="font-size:11.5px;color:#8fadc4">Inpatient Chart · Pharmacy View</span>
+  <span class="mono" style="margin-left:auto;font-size:11px;color:#8fadc4">USER: ${esc(S.ini)} · PHARM</span></div>
+ <div class="mpt">${Object.entries(ME).map(([k,v])=>`<button class="${k===S.me.pid?"on":""}" data-mp="${k}">${esc(v.name.split(",")[0])} · ${v.room}</button>`).join("")}</div>
+ <div class="mw"><aside class="sto">
+  <div class="sth"><div class="pho" style="background:${p.hue}">${p.ini}</div>
+   <div><h1>${esc(p.name)}</h1><div class="m">${p.age} y · ${p.sex} · ${p.dob}</div><div class="m">MRN ${p.mrn}</div></div></div>
+  <div class="sec"><div class="row"><span>Location</span><span>${p.room}</span></div>
+   <div class="row"><span>Unit</span><span>${esc(p.unit)}</span></div>
+   <div class="row"><span>LOS</span><span>${p.los}</span></div>
+   <div class="row"><span>Attending</span><span>${esc(p.att)}</span></div></div>
+  <div class="alb"><h3>⚠ Allergies</h3>${p.alrg.map(a=>`<li>${esc(a.a)}<em>${esc(a.r)}</em></li>`).join("")}</div>
+  <div class="sec"><h2>Code Status</h2><span class="cp co1">${esc(p.code)}</span></div>
+  <div class="sec"><h2>Measurements</h2>
+   <div class="row"><span>Weight</span><span>${p.wt}</span></div>
+   <div class="row"><span>Height</span><span>${p.ht}</span></div>
+   <div class="row"><span>Serum Cr</span><span>${p.scr} mg/dL</span></div></div>
+  <div class="sec"><h2>Diet</h2><div style="font-size:11.5px;color:#eaf3fa">${esc(p.diet)}</div></div></aside>
+  <div class="wk"><div class="at">${MT.map(([k,l])=>`<button class="${k===S.me.tab?"on":""}" data-mt="${k}">${l}</button>`).join("")}</div>
+  <div class="pane">${pane}</div></div></div></div>`;}
+
+/* ---- certificate ---- */
+function code(){const tp=totP();let h=0;const s=S.user+"|"+tp.d+"|"+new Date().toDateString();
+ for(let i=0;i<s.length;i++)h=((h<<5)-h+s.charCodeAt(i))|0;
+ return "LUCOP-"+Math.abs(h).toString(36).toUpperCase().padStart(7,"0").slice(0,7)+"-"+tp.d;}
+function vCert(){const tp=totP(),pc=tp.t?Math.round(tp.d/tp.t*100):0;
+ const d=new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
+ const rows=["rx","me"].flatMap(s=>TASKS[s].sets.map(x=>{const p=setP(s,x.k);
+  return{l:META[s].name.split(" ")[0]+" · "+x.name,d:p.d,t:p.t};}));
+ const weak=rows.filter(r=>r.d<r.t).sort((a,b)=>(a.d/a.t)-(b.d/b.t)).slice(0,3);
+ return `<div class="cw"><div><div class="ct">
+ <div class="ctm">LU</div><div class="ey">Loyola University · College of Pharmacy</div>
+ <h1>Certificate of Completion</h1>
+ <div class="nmx">${esc(S.user||"Student Pharmacist")}</div>
+ <p class="sb2">has completed guided practice in the LUCOP Pharmacy Playground, working through simulated community dispensing and inpatient chart review systems in preparation for introductory pharmacy practice experiences.</p>
+ <div class="cs"><div><b>${tp.d}</b><span>Tasks completed</span></div><div><b>${tp.t}</b><span>Tasks available</span></div>
+  <div><b>${pc}%</b><span>Overall score</span></div></div>
+ <div class="brk"><h4>Performance by task set</h4>
+  ${rows.map(r=>`<div class="br"><span class="l">${esc(r.l)}</span>
+   <span class="tr"><i style="width:${Math.round(r.d/r.t*100)}%"></i></span><span class="sc">${r.d}/${r.t}</span></div>`).join("")}</div>
+ ${weak.length?`<div class="brk"><h4>Suggested review before rotation</h4>
+  <p style="font-size:12.5px;color:#3f3310;line-height:1.7">${weak.map(w=>esc(w.l)).join(" · ")}</p></div>`
+  :`<div class="brk"><h4>Result</h4><p style="font-size:12.5px;color:#3f3310">All task sets completed. Nicely done.</p></div>`}
+ <div class="cf"><div>Completed <b>${d}</b><br>Signed on as <b>${esc(S.ini)}</b></div>
+  <div style="text-align:right">Verification code<br><span class="cd">${code()}</span></div></div>
+ <p class="cnt">This certificate documents completion of a simulated training exercise using fictitious patient data. It is not a clinical credential, licensure, or continuing education credit.</p>
+ </div><div class="cac"><button class="tbtn" id="cP" style="padding:11px 20px;font-size:13px">🖨 Print / Save as PDF</button>
+ <button class="tbtn" id="cB" style="padding:11px 20px;font-size:13px">‹ Back to Systems</button></div></div></div>`;}
+
+/* ============ RENDER ============ */
+function render(){
+ const sc=$("#scr"),signed=S.screen!=="login";
+ ["bCert","bReset","tbU"].forEach(i=>$("#"+i).classList.toggle("hide",!signed));
+ $("#bLob").classList.toggle("hide",!(signed&&S.screen!=="lobby"));
+ $("#tbSys").classList.toggle("hide",S.screen!=="mod");
+ if(signed){$("#tbAv").textContent=S.ini;$("#tbN").textContent=S.user.split(" ")[0];$("#tbU").style.display="flex";}
+ if(S.screen==="mod")$("#tbSysN").textContent=META[S.sys].name;
+ if(S.screen==="login"){sc.innerHTML=vLogin();bLogin();}
+ else if(S.screen==="lobby"){sc.innerHTML=vLobby();document.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{
+   S.sys=b.dataset.open;S.screen="mod";S.setKey=null;S.tIdx=0;S.fb=null;S.pick=null;S.hint=false;render();});}
+ else if(S.screen==="cert"){sc.innerHTML=vCert();$("#cP").onclick=()=>window.print();$("#cB").onclick=()=>{S.screen="lobby";render();};}
+ else{sc.innerHTML=`<div class="win"><div class="wbar"><div class="dots">
+   <i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+   <span class="wtt">${esc(META[S.sys].name)} — Workstation 04 — ${esc(S.ini)}</span></div>
+   <div class="wbody"><div class="app">${S.sys==="rx"?vRx():vMe()}</div>${vPC()}</div></div>`;bMod();}
+ tick();
+}
+function bLogin(){const go=()=>{const n=$("#iN").value.trim(),i=$("#iI").value.trim().toUpperCase();
+ if(!n){$("#iN").focus();return;}
+ S.user=n;S.ini=i||n.split(" ").map(x=>x[0]).join("").slice(0,3).toUpperCase();S.screen="lobby";render();};
+ $("#goL").onclick=go;$("#iI").onkeydown=e=>{if(e.key==="Enter")go();};
+ $("#iN").onkeydown=e=>{if(e.key==="Enter")$("#iI").focus();};$("#iN").focus();}
+
+function bMod(){
+ const t=$("#pcT");if(t)t.onclick=()=>{S.pcOpen=!S.pcOpen;render();};
+ document.querySelectorAll("[data-set]").forEach(b=>b.onclick=()=>{S.setKey=b.dataset.set;S.tIdx=0;S.fb=null;S.pick=null;S.hint=false;render();});
+ const bk=$("#bk");if(bk)bk.onclick=()=>{S.setKey=null;S.fb=null;render();};
+ document.querySelectorAll("[data-ch]").forEach(b=>b.onclick=()=>{S.pick=+b.dataset.ch;S.fb=null;render();});
+ const bC=$("#bC");if(bC)bC.onclick=chk;
+ const bH=$("#bH");if(bH)bH.onclick=()=>{S.hint=true;S.fb=null;render();};
+ const tN=$("#tN");if(tN)tN.onclick=()=>{const st=TASKS[S.sys].sets.find(x=>x.k===S.setKey);
+  if(S.tIdx<st.items.length-1){S.tIdx++;S.fb=null;S.pick=null;S.hint=false;}else{S.setKey=null;S.fb=null;}render();};
+ const tP=$("#tP");if(tP)tP.onclick=()=>{if(S.tIdx>0){S.tIdx--;S.fb=null;S.pick=null;S.hint=false;render();}};
+ const rS=$("#rS");if(rS)rS.onclick=()=>{const st=TASKS[S.sys].sets.find(x=>x.k===S.setKey);
+  st.items.forEach(i=>delete S.res[i.id]);S.tIdx=0;S.fb=null;S.pick=null;S.hint=false;render();};
+ const tA=$("#tA");if(tA)tA.onkeydown=e=>{if(e.key==="Enter")chk();};
+ if(S.sys==="rx")bRx();else bMe();
+}
+function chk(){
+ const st=TASKS[S.sys].sets.find(x=>x.k===S.setKey);if(!st)return;
+ const it=st.items[S.tIdx];let ok=false;
+ if(it.t==="judg"){if(S.pick===null){S.fb={k:"h",h:"Select an option",m:"Choose one of the answers above, then press Check Answer.",w:""};render();return;}
+  ok=S.pick===it.ans;}
+ else if(it.t==="calc"){const raw=($("#tA")||{}).value||"";const n=parseFloat(String(raw).replace(/[^0-9.\-]/g,""));
+  if(isNaN(n)){S.fb={k:"h",h:"Enter a number",m:"This task expects a numeric answer.",w:""};render();return;}
+  ok=Math.abs(n-it.a)<=(it.tol||0);}
+ else{const raw=($("#tA")||{}).value||"";
+  if(!raw.trim()){S.fb={k:"h",h:"Enter an answer",m:"Type your answer in the box, then press Check Answer.",w:""};render();return;}
+  ok=it.a.some(a=>nrm(raw).includes(nrm(a)));}
+ const pv=S.res[it.id]||{n:0};S.res[it.id]={ok:ok||pv.ok,n:pv.n+1};
+ if(ok)S.fb={k:"g",h:"Correct",m:"",w:it.w};
+ else{const n=S.res[it.id].n;
+  S.fb={k:"b",h:"Not quite",m:n>=2?"Try again — here is a hint: "+it.h:"Take another look in the system on the left, then try again.",w:""};
+  if(n>=2)S.hint=true;}
+ render();
+}
+function bRx(){
+ document.querySelectorAll("[data-nav]").forEach(b=>b.onclick=()=>{S.rx={view:"queue",sel:null,sigOut:"",dur:null,adj:null,msg:""};render();});
+ document.querySelectorAll("[data-rx]").forEach(r=>r.onclick=()=>{S.rx={view:"entry",sel:r.dataset.rx,sigOut:"",dur:null,adj:null,msg:""};render();});
+ document.querySelectorAll("[data-pt]").forEach(r=>r.onclick=()=>{S.rx.sel=r.dataset.pt;S.rx.view="prof";render();});
+ const b2=$("#bk2");if(b2)b2.onclick=()=>{S.rx.view="queue";render();};
+ const bp=$("#bPr");if(bp)bp.onclick=()=>{const r=S.q.find(x=>x.id===S.rx.sel);S.rx.sel=r.pid;S.rx.view="prof";render();};
+ const bs=$("#bSig");if(bs)bs.onclick=()=>{S.rx.sigOut=xlat($("#fG").value)||"Unable to interpret — check your shorthand.";render();};
+ const bd=$("#bDur");if(bd)bd.onclick=()=>{const r=S.q.find(x=>x.id===S.rx.sel);let m=[];
+  if(r.iss==="allergy")m.push("<b>SEVERITY 1 — ALLERGY MATCH.</b> Patient has a documented sulfa allergy on file (rash, 2008). The prescribed agent sulfamethoxazole-trimethoprim is a sulfonamide antimicrobial. Do not dispense without prescriber contact.");
+  if(r.iss==="nsaid")m.push("<b>SEVERITY 2 — DRUG INTERACTION.</b> Ibuprofen with apixaban: additive bleeding risk.<br><b>SEVERITY 2 — DISEASE INTERACTION.</b> NSAID use in CKD stage 3b: risk of further renal decline and fluid retention.");
+  if(r.iss==="cii")m.push("<b>CONTROLLED SUBSTANCE — CII.</b> No refills permitted. Prior fill 09/26/2026, 20-day supply, exhausted 10/16/2026. PDMP review required before dispensing.");
+  if(r.iss==="rts")m.push("<b>THERAPY CHANGE DETECTED.</b> Prior fill was levothyroxine 75 mcg on 09/18/2026. This prescription is 88 mcg — a strength change, not a duplicate refill.");
+  if(!m.length)m.push("No clinically significant DUR findings. Profile reviewed against the full active medication list.");
+  S.rx.dur=m.join("<br><br>");render();};
+ const ba=$("#bAdj");if(ba)ba.onclick=()=>{const r=S.q.find(x=>x.id===S.rx.sel);
+  if(r.rej==="79")S.rx.adj={ok:false,m:"<b>REJECTED — CODE 79: REFILL TOO SOON.</b><br>Plan reports a previous fill of this therapy on 09/18/2026 for a 30-day supply. Next eligible fill date 10/18/2026.<br><i>Pharmacist review required — check whether the strength or directions have changed.</i>"};
+  else S.rx.adj={ok:true,m:"<b>PAID.</b> Claim accepted. Patient pay amount $"+r.cp.toFixed(2)+". Ingredient cost $"+r.pz.toFixed(2)+". No plan edits returned."};
+  render();};
+ const bf=$("#bFill");if(bf)bf.onclick=()=>{const r=S.q.find(x=>x.id===S.rx.sel);
+  if(!$("#fS").value.trim()){S.rx.msg="⚠ Day supply is required before this prescription can be filled.";render();return;}
+  if(r.iss==="allergy"){S.rx.msg="⚠ HARD STOP — a documented allergy match cannot be overridden at entry without prescriber contact. Use Call Prescriber or Return to Prescriber.";render();return;}
+  r.dsup=$("#fS").value.trim();r.st="Filled";
+  S.rx.msg="✓ Prescription "+r.id+" verified and filled by "+S.ini+". Label printed, moved to will-call.";render();};
+ const br=$("#bRej");if(br)br.onclick=()=>{const r=S.q.find(x=>x.id===S.rx.sel);r.st="Hold";
+  S.rx.msg="Prescription returned to prescriber with a clinical note. Status set to Hold pending response.";render();};
+ const bc=$("#bCall");if(bc)bc.onclick=()=>{const r=S.q.find(x=>x.id===S.rx.sel);
+  S.rx.msg="☎ Call logged to "+r.pr+". Document the recommendation made, the response received, and any change authorized — a verbal change is only valid once written into the record.";render();};
+}
+function bMe(){
+ document.querySelectorAll("[data-mp]").forEach(b=>b.onclick=()=>{S.me.pid=b.dataset.mp;S.me.ord=null;render();});
+ document.querySelectorAll("[data-mt]").forEach(b=>b.onclick=()=>{S.me.tab=b.dataset.mt;render();});
+ document.querySelectorAll("[data-note]").forEach(b=>b.onclick=()=>b.parentElement.classList.toggle("op"));
+ document.querySelectorAll("[data-dose]").forEach(b=>b.onclick=()=>{
+  const[i,j]=b.dataset.dose.split("-").map(Number),d=new Date();
+  ME[S.me.pid].meds[i].d[j].s="Given — "+S.ini+" @ "+String(d.getHours()).padStart(2,"0")+String(d.getMinutes()).padStart(2,"0");
+  render();});
+ const og=$("#oGo");if(og)og.onclick=()=>{
+  const d=$("#oD").value.trim(),s=$("#oS").value.trim(),f=$("#oF").value,i=$("#oI").value.trim();
+  S.me.ord=(!d||!s||!f||!i)
+   ?{ok:false,m:"Order incomplete. Medication, dose and route, frequency, and indication are all required. Structured order entry exists specifically to prevent the ambiguity that free-text orders create."}
+   :{ok:true,m:`Order accepted and routed to pharmacy for verification: ${d} ${s} ${f} — indication: ${i}. Range check passed against documented weight ${ME[S.me.pid].wt}. Entered by ${S.ini}.`};
+  render();};
+ const oc=$("#oCl");if(oc)oc.onclick=()=>{S.me.ord=null;render();};
+}
+/* taskbar */
+const SNAP=JSON.stringify(ME);
+$("#bLob").onclick=()=>{S.screen="lobby";render();};
+$("#bCert").onclick=()=>{S.screen="cert";render();};
+$("#bReset").onclick=()=>{
+ if(!confirm("Reset the entire playground?\n\nThis clears all task progress, restores every prescription in the queue, un-documents all medication doses, and returns both systems to their starting state.\n\nYour name and sign-on are kept."))return;
+ S.res={};S.setKey=null;S.tIdx=0;S.fb=null;S.pick=null;S.hint=false;
+ S.q=JSON.parse(JSON.stringify(Q0));
+ const sn=JSON.parse(SNAP);Object.keys(sn).forEach(k=>ME[k]=sn[k]);
+ S.rx={view:"queue",sel:null,sigOut:"",dur:null,adj:null,msg:""};
+ S.me={pid:"m1",tab:"summary",ord:null};
+ S.screen="lobby";render();};
+S.q=JSON.parse(JSON.stringify(Q0));
+render();
+</script>
+</body>
+</html>
