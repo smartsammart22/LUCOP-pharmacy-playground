@@ -94,7 +94,7 @@ font-weight:700;padding:13px;border-radius:var(--r);font-size:14.5px;border:1px 
 .dots{display:flex;gap:6px}.dots i{width:11px;height:11px;border-radius:50%;display:block}
 .wtt{font-size:11.5px;color:#9fb0c6;font-weight:600}
 .wbody{flex:1;display:flex;min-height:0}
-.app{flex:1;overflow:auto;min-width:0}
+.app{flex:1;overflow:auto;min-width:0;min-height:0}
 /* preceptor */
 .pc{width:328px;flex:none;background:linear-gradient(180deg,#141b26,#0f141d);border-left:1px solid #28313f;display:flex;flex-direction:column;overflow:auto}
 .pc.col{width:42px}
@@ -136,13 +136,13 @@ font-size:12.5px;line-height:1.5;color:#cfdbe9;transition:.13s}
 .pf button{flex:1;font-size:11px;padding:8px;border-radius:var(--r);background:#1b2431;border:1px solid #2b3545;color:#8fa0b8}
 .pf button:hover{background:#243044;color:#cfdbe9}
 /* ===== SYSTEM 1: RxONE (dated teal terminal) ===== */
-.rx{background:#c8ccc4;color:#101210;min-height:100%;display:flex;flex-direction:column}
+.rx{background:#c8ccc4;color:#101210;height:100%;display:flex;flex-direction:column;overflow:hidden}
 .rxm{background:#008080;color:#fff;display:flex;align-items:center;font-size:12px;border-bottom:2px solid #004f4f}
 .rxm .mi{padding:7px 14px;border-right:1px solid #0a9c9c;font-weight:600}
 .rxm .mi:hover{background:#0a9c9c}
 .rxm .lg2{background:#004f4f;padding:7px 15px;font-weight:800;letter-spacing:.1em}
 .rxm .who{margin-left:auto;padding:7px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;background:#004f4f}
-.rxmain{flex:1;padding:13px;overflow:auto}
+.rxmain{flex:1;padding:13px;overflow:auto;min-height:0}
 .pnl{background:#d8dcd4;border:2px solid #fff;border-right-color:#808478;border-bottom-color:#808478;margin-bottom:12px}
 .pnl>h3{background:linear-gradient(180deg,#006a6a,#004f4f);color:#fff;font-size:11px;font-weight:700;
 letter-spacing:.14em;text-transform:uppercase;padding:6px 11px}
