@@ -701,6 +701,71 @@ me:{sets:[
    o:["Nothing — any entry is accepted","A documented indication and all required fields completed","Only the drug name","Supervisor approval for every order"],
    ans:1,h:"Submit the form with something missing and read the rejection message.",
    w:"Order entry systems enforce structured fields precisely because free-text orders are where errors hide. Learning to read what a system rejects — and why — transfers to every EHR you will ever use."}]}
+]},
+cl:{sets:[
+ {k:"a",name:"CGM Metrics & Interpretation",items:[
+  {id:"g1",t:"find",q:"Open Delphine Arceneaux-Boudreaux's chart. What is her mean glucose in mg/dL over the 14-day download? (number only)",
+   a:["148"],h:"Check the 'At a Glance' cards or the Key Values rail on the left.",
+   w:"Mean glucose 148 mg/dL produces a GMI of ~6.8%, which looks reasonable on paper but conceals recurrent nocturnal hypoglycemia."},
+  {id:"g2",t:"calc",q:"Calculate Delphine's GMI (%) using the consensus formula: GMI = 3.31 + (0.02392 × mean glucose). Round to one decimal place.",
+   a:6.8,tol:0.1,u:"%",h:"Multiply 148 by 0.02392, then add 3.31.",
+   w:"3.31 + (0.02392 × 148) = 6.85% (rounds to 6.8%–6.9%). Notice this is lower than her lab A1c of 7.1%."},
+  {id:"g3",t:"judg",q:"Look at Delphine's metrics vs consensus targets. Her coefficient of variation (CV) is 38.2%. What is the clinical goal and significance of this finding?",
+   o:["Goal is ≤ 36%; her CV indicates high glycemic variability and heightened hypoglycemia risk",
+      "Goal is > 50%; her glucose is too stable",
+      "Goal is < 20%; CV is only used in Type 1 diabetes",
+      "CV of 38.2% is within normal limits for insulin therapy"],
+   ans:0,h:"Consensus guidelines set 36% as the threshold for glycemic stability.",
+   w:"A CV > 36% defines unstable glucose with significant peaks and valleys, directly correlating with nocturnal low frequency."},
+  {id:"g4",t:"find",q:"Switch to Jamaal Whitfield. What is his percentage Time in Range (70–180 mg/dL)? (number only)",
+   a:["54"],h:"Check the CGM Metrics tab or the Summary rail on the left.",
+   w:"54% TIR falls short of the consensus target of > 70% for individuals with Type 1 diabetes without high hypoglycemia risk."}]},
+ {k:"b",name:"Pattern Recognition & Artifacts",items:[
+  {id:"h1",t:"find",q:"Look at Delphine's flagged sensor events. What was the lowest recorded glucose value on 10/19? (number only)",
+   a:["51"],h:"Go to the Sensor Events tab or check the Lowest Recorded Value panel.",
+   w:"51 mg/dL at 03:10 is Level 2 hypoglycemia (< 54 mg/dL), requiring immediate clinical review of her bedtime basal dose."},
+  {id:"h2",t:"judg",q:"Examine Delphine's AGP trace and event log. At what time of day do her low glucose readings consistently cluster?",
+   o:["Mid-afternoon (14:00–16:00)",
+      "Overnight (02:00–04:00)",
+      "Immediately after dinner (18:00–20:00)",
+      "Pre-breakfast only (07:00–08:00)"],
+   ans:1,h:"Look at the shaded dip on the glucose curve and the timestamps in the event log.",
+   w:"Nocturnal hypoglycemia clustering between 02:00 and 04:00 points directly to excess bedtime basal insulin (glargine 38 units)."},
+  {id:"h3",t:"judg",q:"Switch to Jamaal. He had a reading of 48 mg/dL at 02:30 on 10/21. What clinical clue indicates this is likely a 'compression low' artifact rather than true hypoglycemia?",
+   o:["He was wearing his pump on the opposite side",
+      "The drop plunged and rebounded rapidly without carbs, and he slept directly on the sensor arm",
+      "He took a large bolus before going to bed",
+      "Sensor artifacts only occur above 250 mg/dL"],
+   ans:1,h:"Read the event note on the 10/21 event carefully.",
+   w:"Direct pressure on a sensor compresses interstitial capillaries, creating a false drop that instantly resolves upon changing sleeping posture without carbohydrate ingestion."},
+  {id:"h4",t:"find",q:"Examine Jamaal's AGP graph. What is his highest recurring glucose peak (mg/dL) following breakfast? (number only)",
+   a:["284"],h:"Look at the peak around 09:00 on the graph or in his event log.",
+   w:"A post-breakfast peak of 284 mg/dL indicates inadequate prandial coverage or delayed bolus timing (mismatch of insulin action with rapid carb absorption)."}]},
+ {k:"c",name:"Geriatric Safety & Regimen Adjustment",items:[
+  {id:"j1",t:"find",q:"Switch to Rosalind Fontenot-Pierre. What is her documented eGFR in mL/min/1.73m²? (number only)",
+   a:["31"],h:"Check the Key Values rail or the Medications/Renal tab.",
+   w:"eGFR 31 mL/min/1.73m² represents Stage 3b CKD, significantly impairing drug clearance."},
+  {id:"j2",t:"judg",q:"Rosalind has an A1c of 6.4% and experiences recurrent late-afternoon lows (~16:00). Which medication is the primary culprit?",
+   o:["Metformin 500 mg daily",
+      "Lisinopril 10 mg daily",
+      "Glipizide 10 mg BID",
+      "Atorvastatin 40 mg at bedtime"],
+   ans:2,h:"Which of these drugs stimulates endogenous insulin secretion and can accumulate in renal impairment?",
+   w:"Glipizide is a sulfonylurea that stimulates insulin release independently of glucose level. In CKD 3b, delayed clearance and tight control (A1c 6.4%) pose a severe hypoglycemia and fall risk."},
+  {id:"j3",t:"judg",q:"What is the safest and most appropriate recommendation for Rosalind's diabetes regimen?",
+   o:["Increase glipizide to 20 mg to prevent afternoon spikes",
+      "Deprescribe or drastically reduce glipizide, and adjust glycemic target to A1c 7.0–7.5%",
+      "Add bedtime insulin glargine",
+      "Instruct her to eat candy every afternoon and make no medication changes"],
+   ans:1,h:"Consider geriatric ADA/AGS guidelines prioritizing hypoglycemia avoidance over tight A1c control.",
+   w:"In older adults with CKD, de-intensifying sulfonylureas prevents fatal hypoglycemia and falls while keeping A1c within a safe, individualized range (7.0–7.5%)."},
+  {id:"j4",t:"judg",q:"For Delphine, what is the most appropriate initial adjustment to address her recurrent 03:00 hypoglycemia?",
+   o:["Increase pre-dinner lispro",
+      "Reduce bedtime glargine by 10–20% (e.g., from 38 units down to 30–34 units)",
+      "Discontinue empagliflozin",
+      "Have her stop eating dinner"],
+   ans:1,h:"Her daytime numbers are relatively stable, but overnight glucose consistently drops below 70 mg/dL.",
+   w:"Targeting the basal insulin dose eliminates nocturnal lows without sacrificing daytime control."}]}
 ]}};
 const META={
  rx:{code:"SYS-01",name:"RxOne Dispensing",sub:"Community / retail pharmacy",spine:"#008080",
@@ -718,7 +783,7 @@ const items=s=>TASKS[s].sets.flatMap(x=>x.items);
 function setP(s,k){const st=TASKS[s].sets.find(x=>x.k===k);
  return{d:st.items.filter(i=>S.res[i.id]&&S.res[i.id].ok).length,t:st.items.length};}
 function sysP(s){const it=items(s);return{d:it.filter(i=>S.res[i.id]&&S.res[i.id].ok).length,t:it.length};}
-function totP(){let d=0,t=0;["rx","me"].forEach(s=>{const p=sysP(s);d+=p.d;t+=p.t;});return{d,t};}
+function totP(){let d=0,t=0;["rx","me","cl"].forEach(s=>{const p=sysP(s);d+=p.d;t+=p.t;});return{d,t};}
 const nrm=s=>String(s).toLowerCase().trim().replace(/[.,;:!?]+$/,"").replace(/\s+/g," ");
 const flg=(v,lo,hi)=>v>hi?{c:"ch1",l:"HIGH",x:"#b87503"}:v<lo?{c:"cl1",l:"LOW",x:"#1a4e8f"}:{c:"co1",l:"WNL",x:"#1f7a4d"};
 function tick(){const d=new Date(),e=$("#clk");if(e)e.textContent=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");}
@@ -738,11 +803,11 @@ function vLobby(){const tp=totP();
  return `<div class="lob"><div class="eyb">LUCOP · College of Pharmacy</div>
  <h1>Choose a practice system.</h1>
  <p>Each system is a working simulation with its own interface, its own patients and its own guided task sets. Work through them in any order — progress carries across both, and you can generate a certificate when you're done.</p>
- <div class="stats">
-  <div class="st"><b>2</b><span>Systems</span></div><div class="st"><b>6</b><span>Task sets</span></div>
+<div class="stats">
+  <div class="st"><b>3</b><span>Systems</span></div><div class="st"><b>9</b><span>Task sets</span></div>
   <div class="st"><b>${tp.t}</b><span>Total tasks</span></div><div class="st"><b>${tp.d}</b><span>Completed</span></div>
   <div class="st"><b>${tp.t?Math.round(tp.d/tp.t*100):0}%</b><span>Overall</span></div></div>
- <div class="grid">${["rx","me"].map(k=>{const m=META[k],p=sysP(k),pc=Math.round(p.d/p.t*100);
+ <div class="grid">${["rx","me","cl"].map(k=>{const m=META[k],p=sysP(k),pc=Math.round(p.d/p.t*100);
   return `<div class="card"><div class="spine" style="background:${m.spine}"></div><div class="cin">
    <div class="cde">${m.code}</div><h3>${m.name}</h3><div class="csub">${m.sub}</div>
    <div class="cds">${m.desc}</div>
@@ -1103,14 +1168,14 @@ function code(){const tp=totP();let h=0;const s=S.user+"|"+tp.d+"|"+new Date().t
  return "LUCOP-"+Math.abs(h).toString(36).toUpperCase().padStart(7,"0").slice(0,7)+"-"+tp.d;}
 function vCert(){const tp=totP(),pc=tp.t?Math.round(tp.d/tp.t*100):0;
  const d=new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
- const rows=["rx","me"].flatMap(s=>TASKS[s].sets.map(x=>{const p=setP(s,x.k);
+const rows=["rx","me","cl"].flatMap(s=>TASKS[s].sets.map(x=>{const p=setP(s,x.k);
   return{l:META[s].name.split(" ")[0]+" · "+x.name,d:p.d,t:p.t};}));
- const weak=rows.filter(r=>r.d<r.t).sort((a,b)=>(a.d/a.t)-(b.d/b.t)).slice(0,3);
+const weak=rows.filter(r=>r.d<r.t).sort((a,b)=>(a.d/a.t)-(b.d/b.t)).slice(0,3);
  return `<div class="cw"><div><div class="ct">
  <div class="ctm">LU</div><div class="ey">Lipscomb University · College of Pharmacy</div>
  <h1>Certificate of Completion</h1>
  <div class="nmx">${esc(S.user||"Student Pharmacist")}</div>
- <p class="sb2">has completed guided practice in the LUCOP Pharmacy Playground, working through simulated community dispensing and inpatient chart review systems in preparation for introductory pharmacy practice experiences.</p>
+ <p class="sb2">has completed guided practice in the LUCOP Pharmacy Playground, working through simulated community dispensing, inpatient chart review, and ambulatory CGM systems in preparation for introductory pharmacy practice experiences.</p>
  <div class="cs"><div><b>${tp.d}</b><span>Tasks completed</span></div><div><b>${tp.t}</b><span>Tasks available</span></div>
   <div><b>${pc}%</b><span>Overall score</span></div></div>
  <div class="brk"><h4>Performance by task set</h4>
