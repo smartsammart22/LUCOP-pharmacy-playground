@@ -140,6 +140,11 @@ font-size:12.5px;line-height:1.5;color:#cfdbe9;transition:.13s}
 .rxm{background:#008080;color:#fff;display:flex;align-items:center;font-size:12px;border-bottom:2px solid #004f4f}
 .rxm .mi{padding:7px 14px;border-right:1px solid #0a9c9c;font-weight:600}
 .rxm .mi:hover{background:#0a9c9c}
+.rxm .mi.on{background:#c8ccc4;color:#101210;font-weight:800}
+.lowstk{color:#a61632;font-weight:700}
+.okstk{color:#0d4a2d;font-weight:700}
+.deabox{background:#fffbe8;border:1px solid #d8cf9a;padding:11px;margin-top:10px}
+.deabox .mono{font-size:12.5px}
 .rxm .lg2{background:#004f4f;padding:7px 15px;font-weight:800;letter-spacing:.1em}
 .rxm .who{margin-left:auto;padding:7px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;background:#004f4f}
 .rxmain{flex:1;padding:13px;overflow:auto;min-height:0}
@@ -373,6 +378,19 @@ const Q0=[
  sig:"1 PO TID PRN",pr:"Castellanos, M. MD",dea:"BC3318878",wr:"10/21/2026",st:"Waiting",iss:"nsaid",pz:9.20,cp:0.00,ndc:"00904-7912-80"},
 {id:"RX-89005",pid:"P-1042",drug:"metFORMIN HCl 1000 mg tablet",qw:60,dp:60,rf:3,
  sig:"1 PO BID WM",pr:"Nkemdirim, A. MD",dea:"AN4471203",wr:"10/02/2026",st:"Waiting",iss:"clean",pz:8.10,cp:0.00,ndc:"00093-7214-98"}];
+const INV=[
+{ndc:"00093-0105-01",n:"sulfamethoxazole-TMP DS 800-160 mg tab",sz:"100 ea",oh:420,loc:"B-14",exp:"08/2027",sch:""},
+{ndc:"00074-6624-90",n:"levothyroxine 88 mcg tab",sz:"90 ea",oh:180,loc:"A-03",exp:"03/2027",sch:""},
+{ndc:"00406-0512-01",n:"oxyCODONE HCl 5 mg tab",sz:"100 ea",oh:300,loc:"SAFE-1",exp:"11/2027",sch:"CII"},
+{ndc:"00904-7912-80",n:"ibuprofen 800 mg tab",sz:"500 ea",oh:1500,loc:"C-21",exp:"01/2028",sch:""},
+{ndc:"00093-7214-98",n:"metFORMIN HCl 1000 mg tab",sz:"500 ea",oh:45,loc:"A-11",exp:"06/2027",sch:""},
+{ndc:"00378-1805-01",n:"apixaban 5 mg tab",sz:"60 ea",oh:120,loc:"A-19",exp:"09/2027",sch:""},
+{ndc:"00054-0018-25",n:"pantoprazole 40 mg tab",sz:"90 ea",oh:0,loc:"B-02",exp:"—",sch:""},
+{ndc:"00781-5180-01",n:"sertraline 100 mg tab",sz:"100 ea",oh:260,loc:"C-08",exp:"04/2028",sch:""}];
+function deaChk(v){const s=String(v||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+ if(!/^[A-Z]{2}\d{7}$/.test(s))return{ok:null,m:"Format invalid. A DEA number must be two letters followed by seven digits."};
+ const d=s.slice(2).split("").map(Number),o=d[0]+d[2]+d[4],e=d[1]+d[3]+d[5],t=o+2*e,c=t%10;
+ return{ok:c===d[6],m:`(${d[0]}+${d[2]}+${d[4]}) + 2 × (${d[1]}+${d[3]}+${d[5]}) = ${o} + ${2*e} = <b>${t}</b><br>Last digit of ${t} is <b>${c}</b>. Entered check digit: <b>${d[6]}</b>.`};}
 const SIGM={"1":"Take 1 tablet","2":"Take 2 tablets","po":"by mouth","qd":"once daily","daily":"once daily",
 "bid":"twice daily","tid":"three times daily","qid":"four times daily","q6h":"every 6 hours","q8h":"every 8 hours",
 "q12h":"every 12 hours","qam":"every morning","qpm":"every evening","qhs":"at bedtime","prn":"as needed",
@@ -680,10 +698,57 @@ function vRx(){const q=S.q;let main;
    <div class="pcard"><h4>Fill History</h4><table class="t" style="font-size:11.5px">
     <thead><tr><th>Date</th><th>Drug</th><th>Qty</th><th>DS</th></tr></thead>
     <tbody>${p.hist.map(h=>`<tr><td class="mono">${h.d}</td><td>${esc(h.g)}</td><td class="mono">${h.q}</td><td class="mono">${h.ds}</td></tr>`).join("")}</tbody></table></div>
-   </div></div></div>`;
+</div></div></div>`;
+ }else if(S.rx.view==="patients"){
+  main=`<div class="pnl"><h3>Patient Directory — ${Object.keys(PT).length} active records</h3><div class="pb" style="padding:0">
+   <table class="t"><thead><tr><th>Patient ID</th><th>Name</th><th>DOB</th><th>Allergies</th><th>Conditions</th><th>Plan</th><th>Fills</th></tr></thead>
+   <tbody>${Object.entries(PT).map(([id,p])=>{const na=p.alrg[0].startsWith("No Known");
+    return `<tr data-pt="${id}"><td class="mono">${id}</td><td><b>${esc(p.name)}</b></td><td class="mono">${p.dob}</td>
+    <td style="${na?"color:#0d4a2d":"color:#a61632;font-weight:700"}">${esc(p.alrg.join("; "))}</td>
+    <td style="font-size:11.5px">${esc(p.cond.join(" · "))}</td>
+    <td style="font-size:11px">${esc(p.plan.split("·")[0])}</td>
+    <td class="mono">${p.hist.length}</td></tr>`;}).join("")}</tbody></table></div></div>
+   <div class="pnl"><h3>Directory Notes</h3><div class="pb" style="font-size:12px;line-height:1.7">
+    Click any row to open the full profile with fill history. Allergy entries shown in red indicate a documented reaction on file — always open the profile before verifying a prescription for that patient.</div></div>`;
+ }else if(S.rx.view==="inventory"){
+  const low=INV.filter(i=>i.oh<60).length;
+  main=`<div class="pnl"><h3>Inventory — Store 0442 · ${INV.length} items · ${low} at or below reorder point</h3><div class="pb" style="padding:0">
+   <table class="t"><thead><tr><th>NDC</th><th>Item</th><th>Package</th><th>On Hand</th><th>Location</th><th>Lot Expiry</th><th>Schedule</th></tr></thead>
+   <tbody>${INV.map(i=>`<tr><td class="mono">${i.ndc}</td><td>${esc(i.n)}</td><td class="mono">${i.sz}</td>
+    <td class="mono ${i.oh===0?"lowstk":i.oh<60?"lowstk":"okstk"}">${i.oh}${i.oh===0?" — OUT":i.oh<60?" — LOW":""}</td>
+    <td class="mono">${i.loc}</td><td class="mono">${i.exp}</td>
+    <td>${i.sch?`<span class="s sr">${i.sch}</span>`:'<span class="alin">—</span>'}</td></tr>`).join("")}</tbody></table></div></div>
+   <div class="pnl"><h3>Why This Screen Matters</h3><div class="pb" style="font-size:12px;line-height:1.7">
+    Stock position changes what you can actually do. An item showing zero on hand means the prescription cannot be filled today regardless of whether it is clinically appropriate and the claim pays — the patient needs a partial fill, a transfer, or a wait time.<br><br>
+    Schedule II items are stored in the safe and tracked on a perpetual inventory. Every dispensed tablet must be reconcilable against a written record.</div></div>`;
+ }else if(S.rx.view==="reports"){
+  const by=s=>q.filter(x=>x.st===s).length;
+  const dr=S.rx.deaRes;
+  main=`<div class="pnl"><h3>Daily Dispensing Summary — 10/23/2026</h3><div class="pb">
+   <table class="t"><thead><tr><th>Status</th><th>Count</th><th>Meaning</th></tr></thead><tbody>
+    <tr><td><span class="s sw">Waiting</span></td><td class="mono">${by("Waiting")}</td><td>Entered, not yet verified</td></tr>
+    <tr><td><span class="s sr">Rejected</span></td><td class="mono">${by("Rejected")}</td><td>Third-party claim denied — needs work</td></tr>
+    <tr><td><span class="s sh">Hold</span></td><td class="mono">${by("Hold")}</td><td>Returned to prescriber, awaiting response</td></tr>
+    <tr><td><span class="s sd">Filled</span></td><td class="mono">${by("Filled")}</td><td>Verified and moved to will-call</td></tr>
+   </tbody></table></div></div>
+   <div class="pnl"><h3>Controlled Substance Log — Schedule II</h3><div class="pb" style="padding:0">
+   <table class="t"><thead><tr><th>Rx Number</th><th>Patient</th><th>Item</th><th>Qty</th><th>Prescriber</th><th>DEA #</th><th>Status</th></tr></thead>
+   <tbody>${q.filter(r=>r.iss==="cii").map(r=>`<tr><td class="mono">${r.id}</td><td>${esc(PT[r.pid].name)}</td>
+    <td>${esc(r.drug)}</td><td class="mono">${r.qw}</td><td>${esc(r.pr)}</td><td class="mono">${r.dea}</td>
+    <td><span class="s ${r.st==="Filled"?"sd":"sw"}">${r.st}</span></td></tr>`).join("")}</tbody></table></div></div>
+   <div class="pnl"><h3>DEA Number Verification Tool</h3><div class="pb">
+    <div style="font-size:12px;line-height:1.7;margin-bottom:9px">Every DEA number carries a check digit. Add the 1st, 3rd and 5th digits. Add the 2nd, 4th and 6th, then double that sum. Add the two results — the last digit of the total must equal the 7th digit.</div>
+    <div class="frow" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+     <input class="fin m" id="deaIn" placeholder="e.g. BL6620911" style="background:#fff;border:1px solid #8a8575;padding:5px 8px;font-family:'IBM Plex Mono',monospace;width:150px">
+     <button class="b" id="deaGo">Verify Check Digit</button>
+     <span style="font-size:11.5px;color:#5a645e">Try the numbers on RX-89003 or RX-89004.</span></div>
+    ${dr?`<div class="deabox"><div style="font-weight:800;font-size:12px;color:${dr.ok===null?"#8a5600":dr.ok?"#0d4a2d":"#a61632"};margin-bottom:6px">
+     ${dr.ok===null?"⚠ INVALID FORMAT":dr.ok?"✓ CHECK DIGIT VALID":"✖ CHECK DIGIT FAILS — this number is not valid"}</div>
+     <div class="mono">${dr.m}</div></div>`:""}
+   </div></div>`;
  }else{
   const r=q.find(x=>x.id===S.rx.sel),p=PT[r.pid];
-  main=`<button class="b" id="bk2" style="margin-bottom:12px">‹ Back to Queue</button>
+   main=`<button class="b" id="bk2" style="margin-bottom:12px">‹ Back to Queue</button>
   <button class="b" id="bPr" style="margin-bottom:12px">View Patient Profile (F7)</button>
   <div class="pnl"><h3>Prescription Entry — ${r.id}</h3><div class="pb">
    ${(()=>{const al=alerts(r,p),un=al.filter(x=>x.req&&!S.ack[r.id+"-"+x.id]).length;
@@ -724,10 +789,12 @@ function vRx(){const q=S.q;let main;
     ${p.hist.slice(0,4).map(h=>`<tr><td class="mono">${h.d}</td><td>${esc(h.g)}</td><td class="mono">${h.q}/${h.ds}d</td></tr>`).join("")}</tbody></table></div>
    </div></div></div>`;
  }
+const NAV=[["queue","Queue"],["patients","Patients"],["inventory","Inventory"],["reports","Reports"]];
+ const act=S.rx.view==="entry"||S.rx.view==="prof"?(S.rx.view==="prof"?"patients":"queue"):S.rx.view;
  return `<div class="rx"><div class="rxm"><div class="lg2">RxONE</div>
-  <div class="mi" data-nav="1">Queue</div><div class="mi">Patients</div><div class="mi">Inventory</div><div class="mi">Reports</div>
+  ${NAV.map(n=>`<div class="mi ${n[0]===act?"on":""}" data-nav="${n[0]}">${n[1]}</div>`).join("")}
   <div class="who">RPH: ${esc(S.ini)} · STORE 0442</div></div>
-   <div class="rxmain">${main}</div>
+  <div class="rxmain">${main}</div>
      ${S.rx.view==="entry"?`${S.rx.msg?`<div class="amsg ${S.rx.msg.startsWith("✓")?"ok":"wn"}">${esc(S.rx.msg)}</div>`:""}
       <div class="abar"><span class="abl">Rx ${esc(S.rx.sel)} · ${esc(PT[S.q.find(x=>x.id===S.rx.sel).pid].name)}${(()=>{
          const r=S.q.find(x=>x.id===S.rx.sel),p=PT[r.pid];
@@ -902,8 +969,11 @@ function chk(){
  render();
 }
 function bRx(){
- document.querySelectorAll("[data-nav]").forEach(b=>b.onclick=()=>{S.rx={view:"queue",sel:null,sigOut:"",dur:null,adj:null,msg:""};render();});
- document.querySelectorAll("[data-rx]").forEach(r=>r.onclick=()=>{S.rx={view:"entry",sel:r.dataset.rx,sigOut:"",dur:null,adj:null,msg:""};render();});
+document.querySelectorAll("[data-nav]").forEach(b=>b.onclick=()=>{
+const keep=S.rx.deaRes;S.rx={view:b.dataset.nav,sel:null,sigOut:"",dur:null,adj:null,msg:"",deaRes:keep};render();});
+ const dg=$("#deaGo");if(dg)dg.onclick=()=>{S.rx.deaRes=deaChk($("#deaIn").value);render();};
+ const di=$("#deaIn");if(di)di.onkeydown=e=>{if(e.key==="Enter"){S.rx.deaRes=deaChk(di.value);render();}};
+document.querySelectorAll("[data-rx]").forEach(r=>r.onclick=()=>{S.rx={view:"entry",sel:r.dataset.rx,sigOut:"",dur:null,adj:null,msg:""};render();});
  document.querySelectorAll("[data-pt]").forEach(r=>r.onclick=()=>{S.rx.sel=r.dataset.pt;S.rx.view="prof";render();});
  const b2=$("#bk2");if(b2)b2.onclick=()=>{S.rx.view="queue";render();};
  const bp=$("#bPr");if(bp)bp.onclick=()=>{const r=S.q.find(x=>x.id===S.rx.sel);S.rx.sel=r.pid;S.rx.view="prof";render();};
