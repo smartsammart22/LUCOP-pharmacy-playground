@@ -179,6 +179,12 @@ border-bottom-color:#6e736a;padding:7px 15px;font-size:12px;font-weight:700;colo
 .ab.r{background:#ffe9ed;border-color:#a61632;color:#6e0c20}
 .ab.p{background:#e4f6ec;border-color:#1b7a4c;color:#0d4a2d}
 .ab h4{font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:5px;font-weight:800}
+.abar{flex:none;background:linear-gradient(180deg,#d8dcd4,#b4bab0);border-top:2px solid #fff;
+box-shadow:0 -4px 12px rgba(0,0,0,.2);padding:8px 13px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.abar .abl{font-size:11.5px;font-weight:700;color:#2c3630;margin-right:auto;letter-spacing:.02em}
+.amsg{flex:none;padding:8px 13px;font-size:12px;font-weight:600;line-height:1.5}
+.amsg.ok{background:#e4f6ec;color:#0d4a2d;border-top:2px solid #1b7a4c}
+.amsg.wn{background:#fff4e3;color:#5e3a00;border-top:2px solid #c07a16}
 .fk{background:#004f4f;color:#9fe8e8;font-family:'IBM Plex Mono',monospace;font-size:10.5px;
 padding:5px 12px;display:flex;gap:16px;flex-wrap:wrap;flex:none}
 .fk b{color:#fff}
@@ -663,11 +669,8 @@ function vRx(){const q=S.q;let main;
     <label>Co-pay</label><div class="ro">$${r.cp.toFixed(2)}</div></div>
     <div class="btns"><button class="b" id="bSig">Translate Sig (F4)</button>
      <button class="b" id="bDur">Run DUR Check (F5)</button><button class="b" id="bAdj">Adjudicate Claim (F6)</button></div>
-    <div class="btns" style="border:0;padding-top:4px"><button class="b go" id="bFill">✓ Verify &amp; Fill</button>
-     <button class="b no" id="bRej">✕ Return to Prescriber</button><button class="b" id="bCall">☎ Call Prescriber</button></div>
     ${S.rx.dur?`<div class="ab d"><h4>DUR Alert</h4>${S.rx.dur}</div>`:""}
     ${S.rx.adj?`<div class="ab ${S.rx.adj.ok?"p":"r"}"><h4>Third Party Response</h4>${S.rx.adj.m}</div>`:""}
-    ${S.rx.msg?`<div class="ab ${S.rx.msg.startsWith("✓")?"p":"d"}"><h4>System Message</h4>${esc(S.rx.msg)}</div>`:""}
    </div>
    <div class="pcard"><h4>Patient Snapshot</h4>
     <dl class="kv"><dt>DOB</dt><dd>${p.dob}</dd><dt>Weight</dt><dd>${p.wt}</dd><dt>Phone</dt><dd>${esc(p.ph)}</dd></dl>
@@ -680,8 +683,13 @@ function vRx(){const q=S.q;let main;
  return `<div class="rx"><div class="rxm"><div class="lg2">RxONE</div>
   <div class="mi" data-nav="1">Queue</div><div class="mi">Patients</div><div class="mi">Inventory</div><div class="mi">Reports</div>
   <div class="who">RPH: ${esc(S.ini)} · STORE 0442</div></div>
-  <div class="rxmain">${main}</div>
-  <div class="fk"><span><b>F4</b> Translate Sig</span><span><b>F5</b> DUR</span><span><b>F6</b> Adjudicate</span>
+   <div class="rxmain">${main}</div>
+     ${S.rx.view==="entry"?`${S.rx.msg?`<div class="amsg ${S.rx.msg.startsWith("✓")?"ok":"wn"}">${esc(S.rx.msg)}</div>`:""}
+     <div class="abar"><span class="abl">Rx ${esc(S.rx.sel)} · ${esc(PT[S.q.find(x=>x.id===S.rx.sel).pid].name)}</span>
+      <button class="b go" id="bFill">✓ Verify &amp; Fill</button>
+      <button class="b no" id="bRej">✕ Return to Prescriber</button>
+      <button class="b" id="bCall">☎ Call Prescriber</button></div>`:""}
+   <div class="fk"><span><b>F4</b> Translate Sig</span><span><b>F5</b> DUR</span><span><b>F6</b> Adjudicate</span>
    <span><b>F7</b> Profile</span><span><b>F9</b> Fill</span></div></div>`;}
 
 /* ---- Meridian ---- */
