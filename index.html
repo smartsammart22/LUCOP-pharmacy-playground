@@ -179,6 +179,26 @@ border-bottom-color:#6e736a;padding:7px 15px;font-size:12px;font-weight:700;colo
 .ab.r{background:#ffe9ed;border-color:#a61632;color:#6e0c20}
 .ab.p{background:#e4f6ec;border-color:#1b7a4c;color:#0d4a2d}
 .ab h4{font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:5px;font-weight:800}
+.alist{border:2px solid #6e736a;background:#eceee9;margin-bottom:12px}
+.alh{background:linear-gradient(180deg,#006a6a,#004f4f);color:#fff;font-size:10px;letter-spacing:.14em;
+text-transform:uppercase;padding:6px 11px;font-weight:800}
+.alt{border-bottom:1px solid #c4c8c0;padding:9px 11px;background:#fff}
+.alt:last-child{border-bottom:0}
+.alt.s1{background:#ffe9ed;border-left:6px solid #a61632}
+.alt.s2{background:#fff4e3;border-left:6px solid #c07a16}
+.alt.s3{background:#eef2f6;border-left:6px solid #7b8ca3}
+.alt.done{opacity:.7}
+.altr{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.alrk{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:#5a645e}
+.alsv{font-size:9.5px;font-weight:800;letter-spacing:.1em;padding:2px 7px;border-radius:3px;color:#fff}
+.alt.s1 .alsv{background:#a61632}.alt.s2 .alsv{background:#8a5600}.alt.s3 .alsv{background:#5a6472}
+.altt{font-size:12.5px;font-weight:700;color:#1b2420;flex:1;min-width:180px}
+.altb{font-size:12px;line-height:1.6;color:#33403a;margin-top:5px;padding-left:28px}
+.alb2{background:linear-gradient(180deg,#e8ebe5,#c8ccc4);border:2px solid #fff;border-right-color:#6e736a;
+border-bottom-color:#6e736a;padding:4px 11px;font-size:11px;font-weight:700;color:#1b2420}
+.alb2:hover{background:#f4f6f2}
+.aldn{font-size:10.5px;font-weight:800;color:#0d4a2d;background:#d4f0de;border:1px solid #87c9a4;padding:3px 8px;border-radius:3px}
+.alin{font-size:10.5px;font-weight:700;color:#5a645e}
 .abar{flex:none;background:linear-gradient(180deg,#d8dcd4,#b4bab0);border-top:2px solid #fff;
 box-shadow:0 -4px 12px rgba(0,0,0,.2);padding:8px 13px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .abar .abl{font-size:11.5px;font-weight:700;color:#2c3630;margin-right:auto;letter-spacing:.02em}
@@ -318,7 +338,7 @@ border-top:1px solid rgba(200,160,74,.4);border-bottom:1px solid rgba(200,160,74
 <script>
 "use strict";
 const $=s=>document.querySelector(s), esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-const S={user:"",ini:"",screen:"login",sys:null,pcOpen:true,setKey:null,tIdx:0,hint:false,pick:null,fb:null,res:{},
+const S={user:"",ini:"",screen:"login",sys:null,pcOpen:true,setKey:null,tIdx:0,hint:false,pick:null,fb:null,res:{},ack:{},
   rx:{view:"queue",sel:null,sigOut:"",dur:null,adj:null,msg:""},me:{pid:"m1",tab:"summary",ord:null}};
 
 /* ============ RETAIL DATA ============ */
@@ -364,8 +384,25 @@ function xlat(raw){
     if(/^x\d+d?$/.test(k)){dur=" for "+k.replace(/[xd]/g,"")+" days";return;}
     if(["pain","nausea","anxiety","cough"].includes(k)){pn=" for "+k;return;}
     o.push(SIGM[k]||t);});
-  return (o.join(" ")+pn+dur).replace(/\s+/g," ").trim()+".";
+return (o.join(" ")+pn+dur).replace(/\s+/g," ").trim()+".";
 }
+function alerts(r,p){const a=[],hasA=!p.alrg[0].startsWith("No Known");
+ if(r.iss==="allergy")a.push({id:"alg",sev:1,t:"ALLERGY MATCH — do not dispense",
+  b:"Patient has a documented allergy to "+p.alrg.join(" · ")+". The prescribed agent is a sulfonamide antimicrobial. Prescriber contact is required before this prescription can be filled.",req:1});
+ if(r.iss==="nsaid"){
+  a.push({id:"int",sev:2,t:"DRUG INTERACTION — NSAID with anticoagulant",
+   b:"Ibuprofen added to apixaban produces additive bleeding risk. Recommend an alternative analgesic, or prescriber review before dispensing.",req:1});
+  a.push({id:"dis",sev:2,t:"DISEASE INTERACTION — NSAID in CKD stage 3b",
+   b:"Chronic NSAID use risks further decline in renal function and fluid retention. Review with the prescriber.",req:1});}
+ if(r.iss==="cii")a.push({id:"cii",sev:2,t:"CONTROLLED SUBSTANCE — Schedule II",
+  b:"No refills permitted. Prior fill 09/26/2026 for a 20-day supply, exhausted 10/16/2026. PDMP review and DEA verification required before dispensing.",req:1});
+ if(r.iss==="rts")a.push({id:"rts",sev:2,t:"THERAPY CHANGE — strength differs from prior fill",
+  b:"Prior fill was levothyroxine 75 mcg on 09/18/2026. This prescription is 88 mcg. A change-in-therapy override may be appropriate rather than accepting a refill-too-soon rejection.",req:1});
+ if(hasA&&r.iss!=="allergy")a.push({id:"alw",sev:3,t:"Allergy on file — no match to this agent",
+  b:p.alrg.join(" · ")+". Reviewed against the prescribed product; no interaction identified. Informational only.",req:0});
+ if(!a.length)a.push({id:"clr",sev:3,t:"No clinically significant findings",
+  b:"Profile reviewed. No allergy match, interaction, or controlled substance restriction identified.",req:0});
+ return a.sort((x,y)=>x.sev-y.sev);}
 
 /* ============ INPATIENT DATA ============ */
 const ME={
@@ -649,8 +686,15 @@ function vRx(){const q=S.q;let main;
   main=`<button class="b" id="bk2" style="margin-bottom:12px">‹ Back to Queue</button>
   <button class="b" id="bPr" style="margin-bottom:12px">View Patient Profile (F7)</button>
   <div class="pnl"><h3>Prescription Entry — ${r.id}</h3><div class="pb">
-   ${!p.alrg[0].startsWith("No Known")?`<div class="alrg">⚠ PATIENT ALLERGY ON FILE — ${esc(p.alrg.join(" · "))}</div>`:""}
-   <div class="fx"><div><div class="fg">
+   ${(()=>{const al=alerts(r,p),un=al.filter(x=>x.req&&!S.ack[r.id+"-"+x.id]).length;
+    return `<div class="alist"><div class="alh">Clinical Alerts — ${al.length} item${al.length>1?"s":""}${un?` · ${un} require documentation`:" · all documented"}</div>
+    ${al.map((x,i)=>{const k=S.ack[r.id+"-"+x.id];
+     return `<div class="alt s${x.sev}${k?" done":""}"><div class="altr">
+      <span class="alrk">${i+1}</span><span class="alsv">SEV ${x.sev}</span>
+      <span class="altt">${esc(x.t)}</span>
+      ${x.req?(k?`<span class="aldn">✓ Documented</span>`:`<button class="alb2" data-ack="${x.id}">Acknowledge</button>`):`<span class="alin">Info</span>`}
+      </div><div class="altb">${esc(x.b)}</div></div>`;}).join("")}</div>`;})()}
+      <div class="fx"><div><div class="fg">
     <label>Patient</label><div class="ro">${esc(p.name)}</div>
     <label>Patient ID</label><div class="ro">${r.pid}</div>
     <label>Prescriber</label><div class="ro">${esc(r.pr)}</div>
@@ -685,8 +729,13 @@ function vRx(){const q=S.q;let main;
   <div class="who">RPH: ${esc(S.ini)} · STORE 0442</div></div>
    <div class="rxmain">${main}</div>
      ${S.rx.view==="entry"?`${S.rx.msg?`<div class="amsg ${S.rx.msg.startsWith("✓")?"ok":"wn"}">${esc(S.rx.msg)}</div>`:""}
-     <div class="abar"><span class="abl">Rx ${esc(S.rx.sel)} · ${esc(PT[S.q.find(x=>x.id===S.rx.sel).pid].name)}</span>
-      <button class="b go" id="bFill">✓ Verify &amp; Fill</button>
+      <div class="abar"><span class="abl">Rx ${esc(S.rx.sel)} · ${esc(PT[S.q.find(x=>x.id===S.rx.sel).pid].name)}${(()=>{
+         const r=S.q.find(x=>x.id===S.rx.sel),p=PT[r.pid];
+         const un=alerts(r,p).filter(x=>x.req&&!S.ack[r.id+"-"+x.id]).length;
+         return !S.rx.dur?' <span style="color:#8a1500">· DUR not run</span>'
+          :un?` <span style="color:#8a1500">· ${un} alert${un>1?"s":""} undocumented</span>`
+          :' <span style="color:#0d4a2d">· cleared for verification</span>';})()}</span>
+    <button class="b go" id="bFill">✓ Verify &amp; Fill</button>
       <button class="b no" id="bRej">✕ Return to Prescriber</button>
       <button class="b" id="bCall">☎ Call Prescriber</button></div>`:""}
    <div class="fk"><span><b>F4</b> Translate Sig</span><span><b>F5</b> DUR</span><span><b>F6</b> Adjudicate</span>
@@ -870,9 +919,15 @@ function bRx(){
   if(r.rej==="79")S.rx.adj={ok:false,m:"<b>REJECTED — CODE 79: REFILL TOO SOON.</b><br>Plan reports a previous fill of this therapy on 09/18/2026 for a 30-day supply. Next eligible fill date 10/18/2026.<br><i>Pharmacist review required — check whether the strength or directions have changed.</i>"};
   else S.rx.adj={ok:true,m:"<b>PAID.</b> Claim accepted. Patient pay amount $"+r.cp.toFixed(2)+". Ingredient cost $"+r.pz.toFixed(2)+". No plan edits returned."};
   render();};
- const bf=$("#bFill");if(bf)bf.onclick=()=>{const r=S.q.find(x=>x.id===S.rx.sel);
+ document.querySelectorAll("[data-ack]").forEach(b=>b.onclick=()=>{
+  S.ack[S.rx.sel+"-"+b.dataset.ack]=true;
+  S.rx.msg="Alert documented by "+S.ini+" at "+new Date().toTimeString().slice(0,5)+".";render();});
+ const bf=$("#bFill");if(bf)bf.onclick=()=>{const r=S.q.find(x=>x.id===S.rx.sel),p=PT[r.pid];
+  const un=alerts(r,p).filter(x=>x.req&&!S.ack[r.id+"-"+x.id]);
+  if(!S.rx.dur){S.rx.msg="⚠ Run the DUR check (F5) before verifying. Clinical screening must be completed first.";render();return;}
+  if(un.length){S.rx.msg="⚠ "+un.length+" alert"+(un.length>1?"s have":" has")+" not been documented. Acknowledge every required alert in the Clinical Alerts panel before verifying.";render();return;}
   if(!$("#fS").value.trim()){S.rx.msg="⚠ Day supply is required before this prescription can be filled.";render();return;}
-  if(r.iss==="allergy"){S.rx.msg="⚠ HARD STOP — a documented allergy match cannot be overridden at entry without prescriber contact. Use Call Prescriber or Return to Prescriber.";render();return;}
+  if(r.iss==="allergy"){S.rx.msg="⚠ HARD STOP — acknowledging the alert does not authorize dispensing. A documented allergy match requires prescriber contact. Use Call Prescriber or Return to Prescriber.";render();return;}
   r.dsup=$("#fS").value.trim();r.st="Filled";
   S.rx.msg="✓ Prescription "+r.id+" verified and filled by "+S.ini+". Label printed, moved to will-call.";render();};
  const br=$("#bRej");if(br)br.onclick=()=>{const r=S.q.find(x=>x.id===S.rx.sel);r.st="Hold";
@@ -902,7 +957,7 @@ $("#bLob").onclick=()=>{S.screen="lobby";render();};
 $("#bCert").onclick=()=>{S.screen="cert";render();};
 $("#bReset").onclick=()=>{
  if(!confirm("Reset the entire playground?\n\nThis clears all task progress, restores every prescription in the queue, un-documents all medication doses, and returns both systems to their starting state.\n\nYour name and sign-on are kept."))return;
- S.res={};S.setKey=null;S.tIdx=0;S.fb=null;S.pick=null;S.hint=false;
+ S.res={};S.ack={};S.setKey=null;S.tIdx=0;S.fb=null;S.pick=null;S.hint=false;
  S.q=JSON.parse(JSON.stringify(Q0));
  const sn=JSON.parse(SNAP);Object.keys(sn).forEach(k=>ME[k]=sn[k]);
  S.rx={view:"queue",sel:null,sigOut:"",dur:null,adj:null,msg:""};
