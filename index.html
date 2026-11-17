@@ -488,6 +488,68 @@ The controller gap is the real story — the school's supply of Flovent ran out 
 Pharmacy: please verify all weight-based doses against the documented weight of 26.8 kg and prepare discharge counseling on spacer technique.
 Peanut and tree nut allergy — strict avoidance, EpiPen Jr at bedside.`}]}};
 
+/* ============ AMBULATORY / CGM DATA ============ */
+const CL={
+c1:{ini:"DA",hue:"#f0a6c0",name:"Arceneaux-Boudreaux, Delphine",mrn:"AMB-40221",age:61,sex:"F",dob:"09/12/1965",
+ wt:"88.4 kg",scr:0.94,egfr:"72",a1c:"7.1",visit:"Diabetes follow-up · 14-day CGM download",
+ dx:"Type 2 diabetes mellitus, insulin-requiring",
+ alrg:[{a:"No Known Drug Allergies",r:"—"}],
+ meds:[{n:"insulin glargine (LANTUS)",s:"38 units subQ at bedtime",i:"Basal insulin"},
+  {n:"insulin lispro (HUMALOG)",s:"8 units subQ with each meal",i:"Prandial insulin"},
+  {n:"metFORMIN 1000 mg",s:"1 tablet PO BID with meals",i:"Type 2 diabetes"},
+  {n:"empagliflozin 10 mg",s:"1 tablet PO daily",i:"Type 2 diabetes / cardiorenal"}],
+ cgm:{days:14,wear:96,mean:148,cv:38.2,tbr2:4,tbr1:5,tir:58,tar1:27,tar2:6,
+  trace:[110,92,74,60,56,64,86,124,168,196,176,152,180,212,190,166,184,216,198,174,160,142,126,116],
+  low:"51 mg/dL at 03:10 on 10/19"},
+ ev:[{d:"10/19",t:"03:10",v:51,k:"low",n:"Low alert. Patient asleep, no symptoms reported. Recovered without treatment by 06:00."},
+  {d:"10/17",t:"02:45",v:58,k:"low",n:"Low alert. Woke with sweating, treated with juice."},
+  {d:"10/15",t:"03:30",v:56,k:"low",n:"Low alert overnight. No treatment recorded."},
+  {d:"10/14",t:"18:20",v:243,k:"high",n:"Post-dinner rise. Returned to range by 22:00."}],
+ note:`Delphine reports feeling "shaky and damp" most mornings and has started keeping crackers at the bedside. She has not told anyone because her A1c of 7.1% was described to her as good.
+She takes her glargine at bedtime, around 22:00, and eats dinner near 18:00.
+Her fasting fingersticks look acceptable because by the time she checks at 07:00 she has already rebounded.`},
+c2:{ini:"JW",hue:"#8fb8e8",name:"Whitfield, Jamaal T.",mrn:"AMB-51877",age:24,sex:"M",dob:"02/28/2002",
+ wt:"71.2 kg",scr:0.88,egfr:">90",a1c:"7.6",visit:"Type 1 diabetes · CGM and pump data review",
+ dx:"Type 1 diabetes mellitus",
+ alrg:[{a:"No Known Drug Allergies",r:"—"}],
+ meds:[{n:"insulin aspart (NOVOLOG) — pump",s:"Basal 0.85 units/hr; carb ratio 1:15 all meals",i:"Type 1 diabetes"},
+  {n:"insulin aspart correction",s:"Correction factor 1 unit per 50 mg/dL above 120",i:"Hyperglycemia correction"},
+  {n:"glucagon nasal (BAQSIMI)",s:"3 mg intranasal PRN severe hypoglycemia",i:"Rescue"}],
+ cgm:{days:14,wear:91,mean:172,cv:34.1,tbr2:1,tbr1:2,tir:54,tar1:28,tar2:15,
+  trace:[128,124,120,116,112,110,114,152,236,284,262,208,160,172,198,176,150,168,210,188,164,150,140,132],
+  low:"48 mg/dL at 02:30 on 10/21 — see event note"},
+ ev:[{d:"10/21",t:"02:30",v:48,k:"art",n:"Abrupt drop from 118 to 48 over 15 minutes, flat for 40 minutes, then immediate return to 115. Patient asleep, no symptoms, no treatment given. Sensor worn on the left arm; patient reports sleeping on that side."},
+  {d:"10/20",t:"09:05",v:284,k:"high",n:"Peak after breakfast (cereal and orange juice, 60 g carbohydrate counted). Dosed 4 units at 07:00."},
+  {d:"10/18",t:"09:20",v:271,k:"high",n:"Post-breakfast peak. Lunch and dinner excursions notably smaller."},
+  {d:"10/16",t:"08:55",v:266,k:"high",n:"Post-breakfast peak, same pattern."}],
+ note:`Jamaal is a senior in college and eats breakfast around 07:00 on weekdays.
+His lunch and dinner excursions are modest. The breakfast excursion is consistently two to three times larger, and his glucose returns to range by midday without correction.
+He asks whether he should "just take a big correction at 9 a.m. every day to flatten it out."`},
+c3:{ini:"RF",hue:"#9fdba6",name:"Fontenot-Pierre, Rosalind",mrn:"AMB-33049",age:76,sex:"F",dob:"06/04/1950",
+ wt:"58.9 kg",scr:1.62,egfr:"31",a1c:"6.4",visit:"Geriatric diabetes review · CGM trial",
+ dx:"Type 2 diabetes mellitus with chronic kidney disease, stage 3b",
+ alrg:[{a:"Sulfa drugs",r:"Rash"}],
+ meds:[{n:"glipiZIDE 10 mg",s:"1 tablet PO twice daily before meals",i:"Type 2 diabetes"},
+  {n:"metFORMIN 500 mg",s:"1 tablet PO daily",i:"Type 2 diabetes"},
+  {n:"lisinopril 10 mg",s:"1 tablet PO daily",i:"Hypertension / renal protection"},
+  {n:"atorvastatin 40 mg",s:"1 tablet PO at bedtime",i:"Hyperlipidemia"}],
+ cgm:{days:14,wear:88,mean:139,cv:31.6,tbr2:3,tbr1:6,tir:66,tar1:22,tar2:3,
+  trace:[128,124,120,118,116,120,132,158,176,164,148,136,150,168,142,112,78,68,92,130,152,148,140,134],
+  low:"62 mg/dL at 16:40 on 10/20"},
+ ev:[{d:"10/20",t:"16:40",v:62,k:"low",n:"Low alert late afternoon. Patient reported dizziness while gardening."},
+  {d:"10/18",t:"17:05",v:65,k:"low",n:"Low alert. Ate a cookie, felt better within 20 minutes."},
+  {d:"10/16",t:"16:25",v:59,k:"low",n:"Low alert. Daughter present, gave juice."},
+  {d:"10/13",t:"16:50",v:66,k:"low",n:"Low alert, no symptoms reported."}],
+ note:`Rosalind lives alone and had an unwitnessed fall in August with no injury.
+Her A1c of 6.4% was presented to her as excellent control. Her lows cluster in the late afternoon, several hours after the midday glipizide dose.
+Her serum creatinine has risen from 1.21 to 1.62 over the past year.
+Treatment goals for older adults with multiple conditions generally target an A1c of 7.0 to 7.5 percent, with hypoglycemia avoidance prioritized over tight control.`}};
+const CGMGOAL=[["Time in range 70–180","tir","> 70 %",70,"up"],
+ ["Time below 70","tbr1x","< 4 %",4,"down"],["Time below 54","tbr2","< 1 %",1,"down"],
+ ["Time above 180","tar1x","< 25 %",25,"down"],["Time above 250","tar2","< 5 %",5,"down"],
+ ["Coefficient of variation","cv","≤ 36 %",36,"down"]];
+function gmi(m){return (3.31+0.02392*m);}
+   
 /* ============ TASKS ============ */
 const TASKS={
 rx:{sets:[
